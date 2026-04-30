@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
-import { FiExternalLink } from "react-icons/fi";
+import { FiExternalLink, FiDownload } from "react-icons/fi";
 
 type BadgeType = 'academic' | 'leetcode' | 'gdsc';
 
@@ -14,7 +14,7 @@ interface Badge {
 }
 
 export function HeroSection() {
-  const { playBassHum, playHover } = useCyberSounds();
+  const { playBassHum, playHover, playWhoosh } = useCyberSounds();
   const [subtitle, setSubtitle] = useState("");
   const fullSubtitle = "Architecting High-Throughput AI & Distributed Systems.";
 
@@ -73,7 +73,7 @@ export function HeroSection() {
         </div>
 
         {/* Glass Badges */}
-        <div className="flex flex-wrap justify-center gap-6 mb-20">
+        <div className="flex flex-wrap justify-center gap-6 mb-12">
           {badges.map((badge, idx) => (
             <motion.div 
               key={badge.text}
@@ -103,6 +103,30 @@ export function HeroSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* Primary CTA: Download Resume */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 1 }}
+          className="mb-20"
+        >
+          <a
+            href="/Adarsh_Singh_Software_Engineer_2027.pdf"
+            download
+            onClick={() => playWhoosh()}
+            onMouseEnter={() => playHover()}
+            className="relative group inline-flex items-center gap-3 px-10 py-5 bg-black/40 backdrop-blur-xl border-2 border-neon-cyan/30 text-white rounded-full font-black uppercase tracking-[0.2em] text-sm md:text-base transition-all duration-300 hover:scale-105 hover:border-neon-cyan hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] interactive overflow-hidden"
+          >
+            <span className="relative z-10">Download Résumé</span>
+            <FiDownload className="relative z-10 text-xl group-hover:translate-y-1 transition-transform" />
+            
+            {/* Animated Beam Effect */}
+            <div className="absolute inset-0 rounded-full border-2 border-transparent">
+              <div className="absolute inset-0 rounded-full animate-border-beam border-2 border-transparent" />
+            </div>
+          </a>
+        </motion.div>
 
         {/* Parallax elements */}
         <motion.div 
