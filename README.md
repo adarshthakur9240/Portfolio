@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Adarsh's Portfolio - Cinematic Spatial Web Experience
 
-## Getting Started
+Welcome to my ultra-premium, high-performance personal portfolio. This project is a blend of **Cinematic Space Aesthetics**, **Anti-Gravity Physics**, and **Cutting-edge Web Architecture** designed to showcase my journey as a Full-Stack AI Engineer.
 
-First, run the development server:
+## 🌌 The Vision
+This portfolio isn't just a static site; it’s an interactive 3D ecosystem built to demonstrate my ability to architect high-throughput systems and immersive user experiences. It features custom WebGL shaders, interactive 3D components, and brand-synchronized hover states[cite: 3].
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack & Architecture
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Category | Technologies |
+| :--- | :--- |
+| **Frontend** | Next.js 14 (App Router), React, Tailwind CSS, Framer Motion |
+| **3D & Graphics** | React Three Fiber (Three.js), Custom GLSL Shaders, @react-three/drei |
+| **Backend & Tools** | Node.js, Express, PostgreSQL (PostGIS), Redis, Turborepo (Micro-frontends)[cite: 3] |
+| **AI & LLM** | Gemini API, OpenAI API, Prompt Engineering, LLMOps[cite: 3] |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ✨ Key Features
 
-To learn more about Next.js, take a look at the following resources:
+*   **Cinematic Space Environment**: A continuous, high-performance nebula starfield with fluid distortion shaders.
+*   **Interactive 3D Skill Sphere**: A draggable and auto-rotating 3D sphere containing my core tech stack (C++, TypeScript, React, etc.)[cite: 3].
+*   **Dynamic Brand Theming**: Custom hover states for badges—LeetCode orange, Google multi-color for GDSC, and Cyber-Blue for academic credentials[cite: 3].
+*   **Spatial Sound Design**: Integrated UI audio (Whoosh & Click) for tactile feedback on major actions like "Hire Me" or "Explore Projects."
+*   **Zero-CLS Layout**: Optimized for sub-80ms p99 latency and high Core Web Vitals performance[cite: 3].
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏗️ Major Projects
 
-## Deploy on Vercel
+### 1. Q-Ecosystem | Secure B2B SaaS Platform
+*   Architected a **Turborepo** architecture of 4 micro-apps, achieving 60% code reuse[cite: 3].
+*   Enforced PostgreSQL with **Row Level Security (RLS)** for B2B data isolation[cite: 3].
+*   Optimized performance to achieve **sub-80ms p99 latency** and sub-200ms FCP[cite: 3].
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. AI Resume Builder | LLM-Powered Engine
+*   Integrated Generative AI models using **Server-Sent Events (SSE)** for sub-second first-token latency[cite: 3].
+*   Designed a resume-scoring algorithm with **92% keyword extraction accuracy** against job descriptions[cite: 3].
+*   Slashed client-side PDF rendering memory footprint by **40%** through refactored caching layers[cite: 3].
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. PawAlert | Distributed Gov-Tech SaaS
+*   Engineered a high-throughput backend using **PostGIS and Redis** for real-time tracking[cite: 3].
+*   Scaled infrastructure to handle **5,000+ concurrent WebSocket connections**[cite: 3].
+*   Achieved a **99.9% delivery rate** of vaccination telemetry via fault-tolerant message brokers[cite: 3].
+
+---
+
+## 🏆 Achievements & Leadership
+
+*   **LeetCode Knight**: Solved 550+ algorithmic problems with a peak rating of **1868** (Global Ranking)[cite: 3].
+*   **GDSC Core Web Lead**: Successfully onboarded **500+ students** and increased event participation by **40%** at JSS Academy[cite: 3].
+*   **Oracle Certified**: AI Foundations Associate 2025[cite: 3].
+
+---
+
+## 🚦 Getting Started
+
+1.  **Clone the Repo**:
+    ```bash
+    git clone https://github.com/adarshthakur9240/Portfolio.git
+    ```
+2.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Run Development Server**:
+    ```bash
+    npm run dev
+    ```
+4.  **Audio Setup**: Place `click.mp3` and `whoosh.mp3` in `/public/sounds/`.
+
+---
+
+## 📫 Let's Connect
+
+*   **Email**: singhadadarsh9240@gmail.com[cite: 3]
+*   **LinkedIn**: [Adarsh Thakur](https://www.linkedin.com/in/adarsh-thakur-7683612a4)[cite: 3]
+*   **Instagram**: [@adarshhh__thakur](https://instagram.com/adarshhh__thakur)[cite: 3]
+
+> "Designed by Adarsh Thakur."
