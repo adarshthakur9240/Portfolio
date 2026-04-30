@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: var(--font-outfit), Arial, Helvetica, sans-serif;
+  }
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+    cursor: none;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .glass {
+    @apply bg-cinematic-light/40 backdrop-blur-md border border-cinematic-border shadow-glass;
+  }
+  .neon-text-cyan {
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.5);
+  }
+  .neon-text-magenta {
+    text-shadow: 0 0 10px rgba(255, 0, 60, 0.7), 0 0 20px rgba(255, 0, 60, 0.5);
+  }
+  .liquid-chrome-text {
+    background: linear-gradient(to right, #fff, #888, #fff, #555, #fff);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: liquid-shine 5s linear infinite;
+  }
+  .animate-border-beam {
+    animation: border-beam 4s linear infinite;
+    border-color: #00f3ff;
+  }
+}
+
+@keyframes liquid-shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #030303;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1a2e;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f3ff;
+}
+
+/* Shockwave effect for cursor click */
+.shockwave {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 243, 255, 0.8);
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 1;
+  z-index: 9999;
+  animation: shockwave-anim 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes shockwave-anim {
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+    border-width: 0px;
+  }
+}
+
+@keyframes border-beam {
+  0% {
+    clip-path: inset(0 0 95% 0);
+  }
+  25% {
+    clip-path: inset(0 95% 0 0);
+  }
+  50% {
+    clip-path: inset(95% 0 0 0);
+  }
+  75% {
+    clip-path: inset(0 0 0 95%);
+  }
+  100% {
+    clip-path: inset(0 0 95% 0);
+  }
+}
+
+.nebula-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.1), transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.1), transparent 40%),
+              radial-gradient(circle at 20% 80%, rgba(255, 0, 60, 0.1), transparent 40%);
+}
