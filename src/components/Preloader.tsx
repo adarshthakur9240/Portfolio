@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export function Preloader({ onComplete }: { onComplete: () => void }) {
   const [text, setText] = useState("");
-  const fullText = "INITIALIZING CORE SYSTEMS...\nSTABILIZING NEURAL LINK...\nWELCOME ADARSH.";
+  const fullText = "INITIALIZING CORE SYSTEMS...\nSTABILIZING NEURAL LINK...\nWELCOME RECRUITER.";
 
   useEffect(() => {
     let currentIndex = 0;
