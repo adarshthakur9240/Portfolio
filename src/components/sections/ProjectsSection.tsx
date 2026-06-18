@@ -1,175 +1,322 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
+
+interface TelemetryLine {
+  label: string;
+  value: string;
+}
 
 interface Project {
   title: string;
   subtitle: string;
-  metrics: string;
+  description: string;
   image: string;
   link: string;
-  color: string;
+  techStack: string;
+  systemCheck: string;
+  telemetry: TelemetryLine[];
 }
 
-const projects: Project[] = [
+const PROJECTS: Project[] = [
   {
     title: "Q-Ecosystem",
     subtitle: "B2B SaaS Platform",
-    metrics: "Architected 4 micro-apps via Turborepo. Achieved sub-80ms p99 latency & sub-200ms FCP. Strict RLS and RBAC.",
+    description:
+      "Architected 4 micro-apps via Turborepo monorepo. Enforced strict PostgreSQL Row Level Security (RLS) and Role-Based Access Control (RBAC) multi-tenant infrastructure.",
     image: "/projects/q-ecosystem.png",
     link: "https://www.qrento.in",
-    color: "#00f3ff",
+    techStack: "Turborepo / Next.js / PostgreSQL / Prisma / Tailwind",
+    systemCheck: "SYS_INIT // SECURE B2B PORTAL DEPLOYED",
+    telemetry: [
+      { label: "p99 Latency", value: "< 80ms" },
+      { label: "FCP Speed Index", value: "< 200ms" },
+      { label: "Service Uptime", value: "99.9%" },
+    ],
   },
   {
     title: "AI Resume Builder",
     subtitle: "Generative Platform",
-    metrics: "Delivered sub-second first-token latency. 92% ATS extraction accuracy. Slashed PDF rendering memory by 40%.",
+    description:
+      "Delivered sub-second first-token latency with streaming LLM completions. Slashed server-side PDF rendering memory consumption by 40% using optimized canvas pipelines.",
     image: "/projects/resume-builder.png",
     link: "https://ai-resume-builder-theta-azure.vercel.app",
-    color: "#bc13fe",
+    techStack: "Next.js / Gemini AI / Canvas / Node.js",
+    systemCheck: "SYS_INIT // GENERATIVE AI PIPELINE",
+    telemetry: [
+      { label: "First Token", value: "< 1.0s" },
+      { label: "ATS Extract Accuracy", value: "92%" },
+      { label: "Node Heap Delta", value: "−40%" },
+    ],
   },
   {
     title: "PawAlert",
     subtitle: "Gov-Tech Infrastructure",
-    metrics: "Scaled Node infrastructure to 5,000+ concurrent WebSockets. Slashed staleness by 80%. 99.9% webhook delivery.",
+    description:
+      "Scaled Node.js clustered socket gateways to handle massive concurrent WebSocket connections. Re-architected PostGIS geospatial indexing for zero data loss webhook ingestion.",
     image: "/projects/pawalert.png",
     link: "https://www.pawalert.in",
-    color: "#ff003c",
+    techStack: "Node.js / WebSockets / PostGIS / Redis",
+    systemCheck: "SYS_INIT // GOV-TECH GATEWAY ONLINE",
+    telemetry: [
+      { label: "Active WebSockets", value: "5,000+" },
+      { label: "PostGIS Latency", value: "sub-50ms" },
+      { label: "Sync Staleness", value: "−80%" },
+    ],
   },
 ];
 
-export function ProjectsSection() {
+// Sequential typewriter terminal line reveal component
+function TypewriterLine({
+  text,
+  active,
+  delay = 0,
+  className = "text-neutral-400",
+  speed = 12,
+}: {
+  text: string;
+  active: boolean;
+  delay?: number;
+  className?: string;
+  speed?: number;
+}) {
+  const [displayedText, setDisplayedText] = useState("");
+
+  useEffect(() => {
+    if (!active) {
+      setDisplayedText("");
+      return;
+    }
+
+    let timer: NodeJS.Timeout;
+    const startTimeout = setTimeout(() => {
+      let i = 0;
+      setDisplayedText("");
+      timer = setInterval(() => {
+        setDisplayedText((prev) => prev + text.charAt(i));
+        i++;
+        if (i >= text.length) {
+          clearInterval(timer);
+        }
+      }, speed);
+    }, delay);
+
+    return () => {
+      clearTimeout(startTimeout);
+      clearInterval(timer);
+    };
+  }, [text, active, delay, speed]);
+
   return (
-    <section id="projects" className="relative py-32 px-4 md:px-20 z-10">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-6xl md:text-9xl font-black mb-32 uppercase tracking-tighter text-center opacity-20">
-          Selected<br/>Works
-        </h2>
-
-        <div className="space-y-40 md:space-y-64">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.title} project={project} index={index} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const isEven = index % 2 === 0;
-  const { playWhoosh } = useCyberSounds();
-
-  return (
-    <div className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-24 items-center`}>
-      {/* 3D Tilt Image */}
-      <div className="w-full md:w-1/2">
-        <TiltCard image={project.image} color={project.color} />
-      </div>
-
-      {/* Content */}
-      <div className="w-full md:w-1/2 space-y-6">
-        <motion.div
-          initial={{ opacity: 0, x: isEven ? 50 : -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="text-xl font-bold uppercase tracking-[0.3em] text-gray-500 mb-2 block">
-            {project.subtitle}
-          </span>
-          <h3 className="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tight">
-            {project.title}
-          </h3>
-          <div className="glass p-6 md:p-8 border-l-4" style={{ borderLeftColor: project.color }}>
-            <p className="text-xl md:text-2xl text-gray-300 font-medium leading-relaxed">
-              {project.metrics}
-            </p>
-          </div>
-          <div className="mt-10">
-            <a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => playWhoosh()}
-              className="inline-block text-xl font-black border-b-2 border-white/20 hover:border-white transition-all pb-1 interactive"
-            >
-              EXPLORE PROJECT {"->"}
-            </a>
-          </div>
-        </motion.div>
-      </div>
+    <div className={`font-mono text-[11px] md:text-xs tracking-wider leading-relaxed ${className}`}>
+      {displayedText}
+      {active && displayedText.length < text.length && (
+        <span className="animate-pulse bg-[#FAFAFA] w-1 h-3.5 inline-block ml-1 align-middle" />
+      )}
     </div>
   );
 }
 
-function TiltCard({ image, color }: { image: string; color: string }) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+export function ProjectsSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { playWhoosh, playHover } = useCyberSounds();
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+    const sections = sectionRefs.current;
+    const triggers: ScrollTrigger[] = [];
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
+    sections.forEach((section, index) => {
+      if (!section) return;
 
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+      const img = section.querySelector(".project-img");
+      if (!img) return;
+
+      // Pin the section and scale the background image down from 1.3 to 1.0
+      const anim = gsap.fromTo(img,
+        { scale: 1.3 },
+        {
+          scale: 1.0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "+=100%",
+            scrub: true,
+            pin: true,
+            pinSpacing: true,
+            onToggle: (self) => {
+              if (self.isActive) {
+                setActiveIndex(index);
+              }
+            },
+          },
+        }
+      );
+
+      if (anim.scrollTrigger) {
+        triggers.push(anim.scrollTrigger);
+      }
+    });
+
+    return () => {
+      triggers.forEach((t) => t.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
 
   return (
-    <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-      }}
-      className="relative aspect-video w-full glass rounded-xl overflow-hidden group interactive shadow-2xl"
-    >
-      <div 
-        className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500" 
-        style={{ background: `radial-gradient(circle at center, ${color}, transparent)` }}
-      />
-      
-      {/* Project Image */}
-      <div className="relative w-full h-full bg-[#111]">
-         <Image 
-          src={image} 
-          alt="Project Mockup" 
-          fill 
-          className="object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-          onError={(e) => {
-            // Silently handle missing image
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-          }}
-         />
-      </div>
+    <div ref={containerRef} id="projects" className="relative bg-[#050505] w-full z-20">
+      {/* Vertically stacked full-screen sections */}
+      {PROJECTS.map((project, index) => {
+        const isActive = activeIndex === index;
 
-      {/* Floating 3D element */}
-      <div 
-        style={{ transform: "translateZ(50px)" }}
-        className="absolute bottom-6 right-6 px-4 py-2 glass border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-white shadow-xl"
-      >
-        Live Preview
-      </div>
-    </motion.div>
+        return (
+          <div
+            key={project.title}
+            ref={(el) => {
+              sectionRefs.current[index] = el;
+            }}
+            className="relative w-full h-screen overflow-hidden border-b border-[#FAFAFA]/10 bg-[#050505]"
+          >
+            {/* Massive background image container with explore cursor trigger */}
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="explore"
+              onClick={playWhoosh}
+              onMouseEnter={playHover}
+              className="absolute inset-0 block w-full h-full overflow-hidden"
+            >
+              <div className="relative w-full h-full bg-[#050505]">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  sizes="100vw"
+                  priority={index === 0}
+                  className="project-img object-cover w-full h-full scale-[1.3] opacity-30 hover:opacity-45 transition-opacity duration-700"
+                />
+                {/* Heavy monochromatic overlay to ensure text contrast */}
+                <div className="absolute inset-0 bg-[#050505]/80 pointer-events-none" />
+              </div>
+            </a>
+
+            {/* Brutalist Content Grid */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                {/* Left Column: Project Identity & Copy */}
+                <div className="lg:col-span-7 space-y-6 text-left">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-neutral-500 block">
+                    PROJECT // 0{index + 1}
+                  </span>
+
+                  <div className="overflow-hidden">
+                    <AnimatePresence mode="wait">
+                      {isActive && (
+                        <motion.h3
+                          initial={{ y: "100%" }}
+                          animate={{ y: "0%" }}
+                          exit={{ y: "-100%" }}
+                          transition={{ type: "spring", stiffness: 280, damping: 24 }}
+                          className="text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-none text-[#FAFAFA] whitespace-nowrap"
+                        >
+                          {project.title}
+                        </motion.h3>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="text-sm font-mono uppercase tracking-widest text-[#FAFAFA]">
+                    <TypewriterLine text={project.subtitle} active={isActive} delay={300} className="text-[#FAFAFA]" />
+                  </div>
+
+                  <div className="border-l border-[#FAFAFA]/10 pl-6 py-2">
+                    <div className="text-sm md:text-base text-neutral-400 leading-relaxed font-mono">
+                      <TypewriterLine text={project.description} active={isActive} delay={600} className="text-neutral-400" />
+                    </div>
+                  </div>
+
+                  <div className="pointer-events-auto mt-4 inline-block">
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={playWhoosh}
+                      onMouseEnter={playHover}
+                      className="inline-flex items-center gap-2 text-xs font-mono tracking-[0.2em] text-[#FAFAFA] border-b border-[#FAFAFA]/25 hover:border-[#FAFAFA] transition-colors pb-1 interactive"
+                    >
+                      LAUNCH PROTOTYPE ↗
+                    </a>
+                  </div>
+                </div>
+
+                {/* Right Column: Typewriter Terminal Telemetry */}
+                <div className="lg:col-span-5 flex justify-end">
+                  <div className="w-full max-w-[420px] bg-[#050505] border border-[#FAFAFA]/15 p-5 font-mono space-y-4 pointer-events-auto select-none rounded-none">
+                    {/* Terminal Header */}
+                    <div className="flex justify-between items-center border-b border-[#FAFAFA]/10 pb-2 text-[9px] text-neutral-500 uppercase tracking-[0.2em]">
+                      <span>SYS_TELEMETRY // 0{index + 1}</span>
+                      <span>STATUS: RUNNING</span>
+                    </div>
+
+                    {/* Sequential Terminal Log Rows */}
+                    <div className="space-y-3">
+                      <TypewriterLine
+                        text={project.systemCheck}
+                        active={isActive}
+                        delay={900}
+                        className="text-neutral-500"
+                        speed={8}
+                      />
+                      <TypewriterLine
+                        text={`CORE_STACK: ${project.techStack}`}
+                        active={isActive}
+                        delay={1200}
+                        className="text-neutral-300"
+                        speed={10}
+                      />
+                      
+                      <div className="border-t border-[#FAFAFA]/10 my-3 pt-3 space-y-2">
+                        {project.telemetry.map((t, i) => (
+                          <div key={t.label} className="flex justify-between items-center text-xs">
+                            <TypewriterLine
+                              text={`> ${t.label}`}
+                              active={isActive}
+                              delay={1500 + i * 250}
+                              className="text-neutral-400"
+                              speed={10}
+                            />
+                            <TypewriterLine
+                              text={t.value}
+                              active={isActive}
+                              delay={1700 + i * 250}
+                              className="text-[#FAFAFA] font-bold"
+                              speed={10}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        );
+      })}
+    </div>
   );
 }

@@ -27,7 +27,7 @@ function Word({ children, position, isMobile }: { children: string, position: TH
     // Pulsing color logic
     const t = clock.elapsedTime;
     const pulse = Math.sin(t * 2 + position.x) * 0.5 + 0.5;
-    const activeColor = pulse > 0.8 ? "#bc13fe" : "#00f3ff"; // Flash purple
+    const activeColor = pulse > 0.8 ? "#FAFAFA" : "#666666"; // Stark white flash
     
     const material = ref.current.material as THREE.MeshBasicMaterial;
     if (material) {

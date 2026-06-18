@@ -1,161 +1,281 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
-import { FiExternalLink, FiDownload } from "react-icons/fi";
+import { MagneticPull } from "@/components/ui/MagneticPull";
+import { FiDownload, FiArrowDown } from "react-icons/fi";
+import gsap from "gsap";
 
-type BadgeType = 'academic' | 'leetcode' | 'gdsc';
-
-interface Badge {
-  text: string;
-  link: string | null;
-  type: BadgeType;
+interface HeroSectionProps {
+  isLoaded?: boolean;
 }
 
-export function HeroSection() {
-  const { playBassHum, playHover, playWhoosh } = useCyberSounds();
-  const [subtitle, setSubtitle] = useState("");
-  const fullSubtitle = "Architecting High-Throughput AI & Distributed Systems.";
+const HERO_NAME = "ADARSH SINGH";
 
+const BADGES = [
+  { label: "B.Tech IT @ JSS", meta: "CGPA: 7.54" },
+  { label: "LeetCode Knight", meta: "Peak 1868 · 554 Solved" },
+  { label: "GDSC Core Web Lead", meta: "Google Developer Student Clubs" },
+];
+
+export function HeroSection({ isLoaded = false }: HeroSectionProps) {
+  const { playWhoosh, playHover } = useCyberSounds();
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const badgesRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const maskLayerRef = useRef<HTMLDivElement>(null);
+
+  // Scramble state
+  const [displayText, setDisplayText] = useState(HERO_NAME);
+  const [scrambleDone, setScrambleDone] = useState(false);
+
+  // Name container Parallax states
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 60, damping: 22, mass: 0.6 };
+  const parallaxX = useSpring(mouseX, springConfig);
+  const parallaxY = useSpring(mouseY, springConfig);
+
+  // 1. Name Scramble Decryption Effect
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      playBassHum();
-      let i = 0;
-      const interval = setInterval(() => {
-        setSubtitle(fullSubtitle.slice(0, i));
-        i++;
-        if (i > fullSubtitle.length) clearInterval(interval);
-      }, 30);
-      return () => clearInterval(interval);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [playBassHum, fullSubtitle]);
+    if (!isLoaded) return;
 
-  const badges: Badge[] = [
-    { text: "B.Tech IT @ JSS (CURRENT CGPA: 7.54)", link: null, type: 'academic' },
-    { text: "LeetCode Knight (Peak: 1868)", link: "https://leetcode.com/u/adarsh__singh_/", type: 'leetcode' },
-    { text: "GDSC Core Web Lead", link: null, type: 'gdsc' }
-  ];
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$/%_";
+    const target = HERO_NAME;
+    let iterations = 0;
 
-  const getBadgeStyles = (type: BadgeType) => {
-    switch (type) {
-      case 'leetcode':
-        return "hover:border-[#FFA116] hover:text-[#FFA116] hover:shadow-[0_0_20px_rgba(255,161,22,0.4)] hover:bg-[#FFA116]/5";
-      case 'academic':
-        return "hover:border-cyan-400 hover:text-cyan-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.5)] hover:bg-cyan-400/5";
-      case 'gdsc':
-        return "hover:border-transparent group/gdsc relative overflow-hidden";
-      default:
-        return "";
-    }
-  };
+    const interval = setInterval(() => {
+      setDisplayText(
+        target
+          .split("")
+          .map((char, index) => {
+            if (char === " ") return " ";
+            if (index < iterations) return target[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+
+      iterations += 0.8;
+
+      if (iterations >= target.length) {
+        clearInterval(interval);
+        setDisplayText(target);
+        setScrambleDone(true);
+      }
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, [isLoaded]);
+
+  // 2. GSAP character reveal entrance (runs after scramble completes)
+  useEffect(() => {
+    if (!isLoaded || !scrambleDone || !wrapperRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Letters slot up from hidden container
+      gsap.from(".hero-char", {
+        y: 110,
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.02,
+        ease: "power4.out",
+        clearProps: "all",
+      });
+
+      if (subtitleRef.current) {
+        gsap.from(subtitleRef.current, {
+          opacity: 0,
+          y: 20,
+          duration: 0.8,
+          ease: "power3.out",
+          delay: 0.3,
+          clearProps: "all",
+        });
+      }
+
+      if (badgesRef.current) {
+        gsap.from(Array.from(badgesRef.current.children), {
+          opacity: 0,
+          y: 15,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "power3.out",
+          delay: 0.5,
+          clearProps: "all",
+        });
+      }
+
+      if (ctaRef.current) {
+        gsap.from(ctaRef.current, {
+          opacity: 0,
+          y: 15,
+          duration: 0.7,
+          ease: "power3.out",
+          delay: 0.7,
+          clearProps: "all",
+        });
+      }
+    }, wrapperRef);
+
+    return () => ctx.revert();
+  }, [isLoaded, scrambleDone]);
+
+  // 3. Mouse spotlight mask movement
+  useEffect(() => {
+    let rafId: number;
+
+    const onMove = (e: MouseEvent) => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const layer = maskLayerRef.current;
+        const section = sectionRef.current;
+        if (!layer || !section) return;
+
+        const rect = section.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const mask = `radial-gradient(circle 260px at ${x}px ${y}px, black 20%, transparent 75%)`;
+        layer.style.webkitMaskImage = mask;
+        (layer.style as unknown as { maskImage: string }).maskImage = mask;
+      });
+    };
+
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // 4. Parallax shift listener
+  useEffect(() => {
+    const handleParallax = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const x = (e.clientX / innerWidth - 0.5) * 30; // -15px to 15px
+      const y = (e.clientY / innerHeight - 0.5) * 30; // -15px to 15px
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+
+    window.addEventListener("mousemove", handleParallax, { passive: true });
+    return () => window.removeEventListener("mousemove", handleParallax);
+  }, [mouseX, mouseY]);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-32 pb-10 z-10">
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-32 pb-10 z-10 bg-[#050505]"
+    >
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: [0.165, 0.84, 0.44, 1] }}
+        ref={wrapperRef}
+        animate={{ opacity: isLoaded ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
         className="text-center w-full max-w-7xl mx-auto flex flex-col items-center"
       >
-        <h1 
-          className="text-7xl md:text-8xl lg:text-[9rem] font-black tracking-tighter leading-[0.9] liquid-chrome-text mb-8 w-full text-center"
+        {/* Name: Base layer + White reveal layer + Parallax container */}
+        <motion.div
+          style={{ x: parallaxX, y: parallaxY }}
+          className="relative mb-10 cursor-crosshair select-none whitespace-nowrap w-full flex justify-center"
         >
-          ADARSH SINGH
-        </h1>
+          {/* Base: Dimmed Gray Name */}
+          <h1
+            aria-label={HERO_NAME}
+            className="text-[9.5vw] font-black tracking-tighter leading-none text-neutral-800 text-center uppercase"
+          >
+            {displayText.split("").map((char, i) => (
+              <span
+                key={i}
+                className="inline-block overflow-hidden"
+                style={{ lineHeight: "0.9" }}
+              >
+                <span
+                  className="hero-char inline-block"
+                  style={{ whiteSpace: char === " " ? "pre" : "normal" }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              </span>
+            ))}
+          </h1>
 
-        <div className="h-10 mb-16">
-          <p className="text-xl md:text-3xl text-gray-300 font-bold tracking-tight">
-            {subtitle}
-            <span className="animate-pulse text-neon-cyan">_</span>
-          </p>
-        </div>
+          {/* Spotlight layer: revealed by mouse radial mask */}
+          <div
+            ref={maskLayerRef}
+            aria-hidden
+            className="absolute inset-0 pointer-events-none flex justify-center items-center"
+            style={{ WebkitMaskImage: "none" }}
+          >
+            <h1 className="text-[9.5vw] font-black tracking-tighter leading-none text-white text-center uppercase">
+              {displayText.split("").map((char, i) => (
+                <span
+                  key={i}
+                  className="inline-block"
+                  style={{ whiteSpace: char === " " ? "pre" : "normal" }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              ))}
+            </h1>
+          </div>
+        </motion.div>
 
-        {/* Glass Badges */}
-        <div className="flex flex-wrap justify-center gap-6 mb-12">
-          {badges.map((badge, idx) => (
-            <motion.div 
-              key={badge.text}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + idx * 0.2, duration: 1 }}
+        {/* Subtitle */}
+        <p
+          ref={subtitleRef}
+          className="text-lg md:text-2xl text-neutral-400 font-medium tracking-tight mb-16 max-w-2xl"
+        >
+          Architecting <span className="text-white font-bold">High-Throughput AI</span> &amp; Distributed Systems.
+        </p>
+
+        {/* Monochromatic Badges */}
+        <div ref={badgesRef} className="flex flex-wrap justify-center gap-4 mb-16">
+          {BADGES.map((b) => (
+            <div
+              key={b.label}
+              onMouseEnter={playHover}
+              className="px-6 py-3 rounded-none bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all duration-300 group cursor-default"
             >
-              <div className="relative group">
-                {badge.type === 'gdsc' && (
-                  <div className="absolute -inset-[1px] bg-gradient-to-r from-blue-500 via-red-500 to-green-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px]" />
-                )}
-                
-                <ComponentWrapper badge={badge}>
-                  <div 
-                    onMouseEnter={() => playHover()}
-                    className={`glass px-8 py-4 rounded-xl border border-white/5 text-sm md:text-lg font-black text-white uppercase tracking-wider shadow-2xl transition-all duration-300 flex items-center gap-2 relative z-10 bg-cinematic-dark ${getBadgeStyles(badge.type)}`}
-                  >
-                    <span className={`opacity-60 group-hover:opacity-100 transition-opacity ${badge.type === 'gdsc' ? 'group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-green-400 group-hover:bg-clip-text group-hover:text-transparent' : ''}`}>
-                      {badge.text}
-                    </span>
-                    {badge.link && (
-                      <FiExternalLink className="text-inherit opacity-0 group-hover:opacity-100 transition-all" />
-                    )}
-                  </div>
-                </ComponentWrapper>
-              </div>
-            </motion.div>
+              <span className="text-xs font-black uppercase tracking-widest text-neutral-400 group-hover:text-white transition-colors">
+                {b.label}
+              </span>
+              <span className="text-xs text-neutral-600 group-hover:text-neutral-400 ml-2 transition-colors">
+                / {b.meta}
+              </span>
+            </div>
           ))}
         </div>
 
-        {/* Primary CTA: Download Resume */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="mb-20"
-        >
-          <a
-            href="/Adarsh_Singh_Software_Engineer_2027.pdf"
-            download
-            onClick={() => playWhoosh()}
-            onMouseEnter={() => playHover()}
-            className="relative group inline-flex items-center gap-3 px-10 py-5 bg-black/40 backdrop-blur-xl border-2 border-neon-cyan/30 text-white rounded-full font-black uppercase tracking-[0.2em] text-sm md:text-base transition-all duration-300 hover:scale-105 hover:border-neon-cyan hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] interactive overflow-hidden"
-          >
-            <span className="relative z-10">Download Résumé</span>
-            <FiDownload className="relative z-10 text-xl group-hover:translate-y-1 transition-transform" />
-            
-            {/* Animated Beam Effect */}
-            <div className="absolute inset-0 rounded-full border-2 border-transparent">
-              <div className="absolute inset-0 rounded-full animate-border-beam border-2 border-transparent" />
-            </div>
-          </a>
-        </motion.div>
+        {/* Monochromatic Magnetic CTA */}
+        <div ref={ctaRef}>
+          <MagneticPull strength={0.3}>
+            <a
+              href="/Adarsh_Singh_Software_Engineer_2027.pdf"
+              download
+              onClick={playWhoosh}
+              onMouseEnter={playHover}
+              className="group inline-flex items-center gap-3 px-10 py-5 border border-white/10 hover:border-white text-white rounded-none font-black uppercase tracking-[0.2em] text-sm transition-all duration-300 relative overflow-hidden bg-white/[0.01] hover:bg-white/[0.04] interactive"
+            >
+              <span className="relative z-10">Download Résumé</span>
+              <FiDownload className="relative z-10 text-xl group-hover:translate-y-0.5 transition-transform" />
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+            </a>
+          </MagneticPull>
+        </div>
 
-        {/* Parallax elements */}
-        <motion.div 
-          animate={{ y: [0, -20, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -z-10 w-[500px] h-[500px] rounded-full bg-neon-cyan/5 blur-[120px] pointer-events-none"
-        />
-        <motion.div 
-          animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -z-10 top-0 left-0 w-[400px] h-[400px] rounded-full bg-neon-purple/5 blur-[100px] pointer-events-none"
-        />
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none"
+          animate={{ y: [0, 8, 0], opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <FiArrowDown className="text-white text-xl" />
+        </motion.div>
       </motion.div>
     </section>
   );
-}
-
-function ComponentWrapper({ badge, children }: { badge: Badge, children: React.ReactNode }) {
-  if (badge.link) {
-    return (
-      <a 
-        href={badge.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block"
-      >
-        {children}
-      </a>
-    );
-  }
-  return <>{children}</>;
 }

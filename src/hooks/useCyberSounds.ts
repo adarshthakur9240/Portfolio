@@ -1,17 +1,29 @@
 "use client";
 
-import useSound from "use-sound";
+import { useSoundContext } from "@/context/SoundContext";
 
+/**
+ * Hook for playing audio feedback.
+ * Decouples UI feedback sounds from BGM toggle settings.
+ */
 export function useCyberSounds() {
-  const [playHover] = useSound("/sounds/crisp-click.mp3", { volume: 0.3 });
-  const [playClick] = useSound("/sounds/click.mp3", { volume: 0.2 }); // Updated to /sounds/click.mp3
-  const [playWhoosh] = useSound("/sounds/whoosh.mp3", { volume: 0.4 }); // Updated to /sounds/whoosh.mp3
-  const [playBassHum] = useSound("/sounds/deep-bass-hum.mp3", { volume: 0.8 });
-
-  return {
-    playHover,
+  const {
+    soundEnabled,
+    toggleSound,
     playClick,
     playWhoosh,
-    playBassHum,
+    playWarpSpeed,
+    playDataScan,
+  } = useSoundContext();
+
+  return {
+    playHover: playClick,
+    playClick,
+    playWhoosh,
+    playWarpSpeed,
+    playDataScan,
+    playBassHum: () => {}, // Deprecated compatibility placeholder
+    soundEnabled,
+    toggleSound,
   };
 }

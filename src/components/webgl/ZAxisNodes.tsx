@@ -48,7 +48,7 @@ export function ZAxisNodes({ count = 100 }: { count?: number }) {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <boxGeometry args={[0.05, 0.05, 0.5]} />
-      <meshBasicMaterial color="#00f3ff" transparent opacity={0.4} />
+      <meshBasicMaterial color="#ffffff" transparent opacity={0.4} />
     </instancedMesh>
   );
 }

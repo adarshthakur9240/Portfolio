@@ -36,33 +36,61 @@ const fragmentShader = `
     color = mix(color, uColor3, n2 * ripple);
     
     // Deep space fade
-    float intensity = 0.05 + 0.1 * ripple;
+    float intensity = 0.04 + 0.08 * ripple;
     gl_FragColor = vec4(color * intensity, 1.0);
   }
 `;
+
+// Fallback CustomTimer in case THREE.Timer isn't exported or defined in TypeScript types
+class CustomTimer {
+  private _startTime: number = typeof performance !== "undefined" ? performance.now() : Date.now();
+  private _elapsedTime: number = 0;
+
+  update() {
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    this._elapsedTime = (now - this._startTime) / 1000;
+  }
+
+  getElapsed() {
+    return this._elapsedTime;
+  }
+}
 
 export function FluidBackground() {
   const meshRef = useRef<THREE.Mesh>(null);
   const mouse = useRef(new THREE.Vector2(0, 0));
 
+  // Instantiate standard THREE.Timer or fallback to CustomTimer
+  const timer = useMemo(() => {
+    const TimerClass = (THREE as unknown as { Timer: typeof CustomTimer }).Timer || CustomTimer;
+    return new TimerClass();
+  }, []);
+
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
     uMouse: { value: new THREE.Vector2(0, 0) },
-    uColor1: { value: new THREE.Color("#00f3ff") }, // Cyan
-    uColor2: { value: new THREE.Color("#bc13fe") }, // Purple
-    uColor3: { value: new THREE.Color("#ff003c") }, // Magenta
+    uColor1: { value: new THREE.Color("#FAFAFA") }, // Stark white
+    uColor2: { value: new THREE.Color("#404040") }, // Mid gray
+    uColor3: { value: new THREE.Color("#111111") }, // Deep dark gray
   }), []);
 
   useFrame((state) => {
     if (!meshRef.current) return;
-    const { clock, mouse: stateMouse } = state;
+    const { mouse: stateMouse } = state;
+    
+    // Update timer and assign elapsed time
+    timer.update();
+    const elapsed = typeof timer.getElapsed === "function" 
+      ? timer.getElapsed() 
+      : (timer as { elapsedTime?: number }).elapsedTime || 0;
     
     // Smoothly interpolate mouse for fluid feel
     mouse.current.x = THREE.MathUtils.lerp(mouse.current.x, stateMouse.x, 0.05);
     mouse.current.y = THREE.MathUtils.lerp(mouse.current.y, stateMouse.y, 0.05);
     
-    (meshRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = clock.elapsedTime;
-    (meshRef.current.material as THREE.ShaderMaterial).uniforms.uMouse.value.set(mouse.current.x, mouse.current.y);
+    const mat = meshRef.current.material as THREE.ShaderMaterial;
+    mat.uniforms.uTime.value = elapsed;
+    mat.uniforms.uMouse.value.set(mouse.current.x, mouse.current.y);
   });
 
   return (

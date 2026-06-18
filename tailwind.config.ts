@@ -9,26 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#030303",
-        foreground: "#ffffff",
-        neon: {
-          cyan: "#00f3ff",
-          purple: "#bc13fe",
-          magenta: "#ff003c"
-        },
+        background: "#050505",
+        foreground: "#FAFAFA",
         cinematic: {
-          dark: "#030303",
-          light: "#0b0c16",
+          dark: "#050505",
+          light: "#0d0d0d",
           border: "rgba(255, 255, 255, 0.05)",
           glass: "rgba(255, 255, 255, 0.02)"
         }
       },
       backgroundImage: {
-        'glass-gradient': 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01))',
+        'glass-gradient': 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01))',
       },
       boxShadow: {
-        'neon-cyan': '0 0 15px rgba(0, 243, 255, 0.5), 0 0 30px rgba(0, 243, 255, 0.2)',
-        'neon-magenta': '0 0 15px rgba(255, 0, 60, 0.5), 0 0 30px rgba(255, 0, 60, 0.2)',
         'glass': '0 4px 30px rgba(0, 0, 0, 0.8)',
       },
       cursor: {
