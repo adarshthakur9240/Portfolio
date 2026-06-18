@@ -21,7 +21,7 @@ export function ContactFooter() {
   };
 
   const socials = [
-    { icon: <FiLinkedin size={32} />, link: "https://linkedin.com/in/adarsh-thakur-7683612a4", name: "LinkedIn" },
+    { icon: <FiLinkedin size={32} />, link: "https://linkedin.com/in/adarsh-singh-7683612a4", name: "LinkedIn" },
     { icon: <FiGithub size={32} />, link: "https://github.com/adarshthakur9240", name: "GitHub" },
     { icon: <SiLeetcode size={32} />, link: "https://leetcode.com/adarsh__singh_", name: "LeetCode" },
     { icon: <FiInstagram size={32} />, link: "https://instagram.com/adarshhh__thakur", name: "Instagram" },
