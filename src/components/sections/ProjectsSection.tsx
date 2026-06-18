@@ -25,6 +25,35 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    title: "OckhamGrid",
+    subtitle: "Algorithmic Intelligence Platform",
+    description:
+      "Autonomous, secure, and sub-millisecond AI AST Engine built with Zero-Trust Sandboxing to automate complex codebase refactoring and PR merges.",
+    image: "/projects/OckhamGrid.png",
+    link: "https://ockham-grid.vercel.app/",
+    techStack: "AI AST Engine / Zero-Trust Sandbox / Live Telemetry",
+    systemCheck: "SYS_INIT // AUTONOMOUS ENGINE ONLINE",
+    telemetry: [
+      { label: "Cloud Savings", value: "$142K+" },
+      { label: "CPU Hrs Reclaimed", value: "3,820h" },
+      { label: "Sandbox Pass Rate", value: "99.8%" },
+    ],
+  },
+  {
+    title: "Vyzrox",
+    subtitle: "Next-Gen Architecture",
+    description:
+      "High-performance distributed system architecture designed for absolute scale and reliability.",
+    image: "/projects/Vyzrox.png",
+    link: "https://vyzrox.vercel.app/",
+    techStack: "Next.js / WebGL / Distributed Systems / Rust / WebAssembly",
+    systemCheck: "SYS_INIT // NO CLOUD // NO LATENCY",
+    telemetry: [
+      { label: "Peak Performance", value: "Sub-Millisecond" },
+      { label: "System Architecture", value: "Distributed / No Cloud" },
+    ],
+  },
+  {
     title: "Q-Ecosystem",
     subtitle: "B2B SaaS Platform",
     description:
