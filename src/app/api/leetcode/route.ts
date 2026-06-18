@@ -18,9 +18,9 @@ export async function GET() {
     // Fallback to static stats so the UI never breaks when Heroku is down
     return NextResponse.json({
       status: 'success',
-      totalSolved: 554,
-      rating: 1637,
-      contributionPoints: 248, // used as streak fallback
+      totalSolved: 600,
+      rating: 1862,
+      contributionPoints: 300, // used as streak fallback
     });
   }
 }

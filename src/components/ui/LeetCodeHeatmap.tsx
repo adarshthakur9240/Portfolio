@@ -193,6 +193,7 @@ export function LeetCodeHeatmap() {
   // Resume-accurate stats
   const LC_TOTAL_SOLVED = 612;
   const LC_PEAK_RATING  = 1862;
+  const LC_TOTAL_VIEWS  = 6000;
 
   // GitHub architect stats
   const GH_COMMITS  = 450;
@@ -264,6 +265,7 @@ export function LeetCodeHeatmap() {
           <AnimatedCounter to={LC_TOTAL_SOLVED} label="Problems Solved"  suffix="+" />
           <AnimatedCounter to={300}             label="Day Streak"      suffix="+" />
           <AnimatedCounter to={LC_PEAK_RATING}  label="Peak Rating" />
+          <AnimatedCounter to={LC_TOTAL_VIEWS}  label="Total Views" suffix="+" />
         </div>
 
         {/* LeetCode heatmap — centered */}
