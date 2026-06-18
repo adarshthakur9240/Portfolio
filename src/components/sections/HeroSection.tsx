@@ -15,7 +15,7 @@ const HERO_NAME = "ADARSH SINGH";
 
 const BADGES = [
   { label: "B.Tech IT @ JSS", meta: "CGPA: 7.54" },
-  { label: "LeetCode Knight", meta: "Peak 1868 · 554 Solved" },
+  { label: "LeetCode Knight", meta: "Peak 1868 · More than 600 Problem Solved" },
   { label: "GDSC Core Web Lead", meta: "Google Developer Student Clubs" },
 ];
 
