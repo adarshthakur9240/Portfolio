@@ -40,7 +40,7 @@ export function Navbar() {
           onMouseEnter={playHover}
           className="text-xl font-black tracking-tighter text-white hover:text-neutral-400 transition-colors duration-200"
         >
-          PORT-FOLIO
+          PORT-<span>FOLIO</span>
         </a>
 
         {/* Nav Links */}
