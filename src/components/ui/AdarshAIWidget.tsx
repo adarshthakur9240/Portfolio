@@ -14,6 +14,14 @@ interface Message {
 // ── Knowledge Base ────────────────────────────────────────────────────────────
 // Keyword → response mapping. Keys are lowercase for case-insensitive matching.
 const KB: Record<string, string> = {
+  "og":
+    "I architected **OckhamGrid**, an autonomous AI AST Engine. It detects complexity hotspots and automates PR merges using Zero-Trust sandboxing. It achieved sub-millisecond latency and saved $142K+ in cloud costs!",
+  "ockham":
+    "I architected **OckhamGrid**, an autonomous AI AST Engine. It detects complexity hotspots and automates PR merges using Zero-Trust sandboxing.",
+  "vyzrox":
+    "**Vyzrox** is a high-performance distributed AI system powered by a local WebAssembly (WASM) neural core. It runs entirely on-device with zero cloud dependencies, zero latency, and absolute privacy.",
+  "vyz":
+    "**Vyzrox** is a high-performance distributed AI system powered by a local WebAssembly (WASM) neural core. It runs entirely on-device.",
   "q-ecosystem":
     "I architected **Q-Ecosystem** using Next.js 14 + Turborepo — a B2B SaaS with 4 micro-apps in a monorepo. It enforces strict Row Level Security (RLS) + RBAC via Supabase, achieves sub-80ms p99 API latency, and sub-200ms FCP. Live at qrento.in 🚀",
 
@@ -79,7 +87,7 @@ const KB: Record<string, string> = {
 };
 
 const DEFAULT_RESPONSE =
-  "I'm Adarsh's pre-trained assistant 🤖. Try asking about **Q-Ecosystem**, **PawAlert**, **LeetCode**, **Skills**, or if he's available to **Hire**!";
+  "I'm Adarsh's pre-trained assistant 🤖. Try asking about **OckhamGrid**, **Vyzrox**, **Q-Ecosystem**, **PawAlert**, **LeetCode**, **Skills**, or if he's available to **Hire**!";
 
 // ── Keyword matcher ───────────────────────────────────────────────────────────
 function getResponse(query: string): string {
@@ -126,6 +134,8 @@ function TypingDots() {
 
 // ── Suggestion pills ──────────────────────────────────────────────────────────
 const PILLS = [
+  "Tell me about OG",
+  "Tell me about Vyzrox",
   "Tell me about Q-Ecosystem",
   "LeetCode Stats",
   "Hire Adarsh",
