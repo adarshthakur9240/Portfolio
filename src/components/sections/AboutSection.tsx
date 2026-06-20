@@ -1,144 +1,258 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
-const CHIPS = [
-  { text: "Scalability Expert", color: "text-white border-white/10" },
-  { text: "AI Architect", color: "text-neutral-300 border-white/10" },
-  { text: "Machine Shipper", color: "text-neutral-400 border-white/10" },
+// ═══════════════════════════════════════════════════════════════════
+// MARQUEE DATA
+// ═══════════════════════════════════════════════════════════════════
+const TECH_STACK = [
+ "LLMs", "RAG Pipeline", "LangChain", "OpenAI API", "Google Gemini", 
+  "VectorDB", "Prompt Engineering", "Agentic AI", "Hugging Face",
+
+  // ⚡ High-Throughput Backend & Architecture (CTO Vibe)
+  "Node.js", "Python", "WebSockets", "Microservices", "System Design", 
+  "Distributed Systems", "Kafka", "gRPC", "GraphQL", "REST APIs",
+
+  // 🗄️ Databases, ORMs & Caching
+  "PostgreSQL", "MongoDB", "Redis", "Prisma ORM", "Supabase", "Atlas Vector Search",
+
+  // 🌐 Modern Frontend & 3D (The Eye-Candy)
+  "Next.js 14", "React", "TypeScript", "Tailwind CSS", "WebGL", 
+  "Three.js", "Framer Motion", "GSAP",
+
+  // 🛠️ DevOps, Cloud & Tooling
+  "Docker", "Kubernetes", "AWS", "GCP", "CI/CD", "Turborepo", "Git",
+
+  // 🏆 Core CS (Flexing the LeetCode Knight Status)
+  "C++", "Data Structures", "Algorithms", "Dynamic Programming"
 ];
 
+// ═══════════════════════════════════════════════════════════════════
+// STAGGER CONTAINER VARIANT
+// ═══════════════════════════════════════════════════════════════════
+const gridContainerVariant = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 90,
+      damping: 16,
+      mass: 0.8,
+    },
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// INFINITE MARQUEE
+// ═══════════════════════════════════════════════════════════════════
+function TechMarquee() {
+  const items = [...TECH_STACK, ...TECH_STACK];
+
+  return (
+    <div className="overflow-hidden w-full relative">
+      <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
+
+      <div
+        className="flex gap-6 whitespace-nowrap"
+        style={{
+          animation: "marquee-scroll 30s linear infinite",
+          width: "max-content",
+        }}
+      >
+        {items.map((tech, i) => (
+          <span
+            key={`${tech}-${i}`}
+            className="inline-flex items-center gap-2 text-sm md:text-base font-bold uppercase tracking-[0.15em] text-neutral-500 hover:text-white transition-colors duration-200 cursor-default py-2"
+          >
+            <span className="w-1.5 h-1.5 bg-neutral-600 rounded-none inline-block" />
+            {tech}
+          </span>
+        ))}
+      </div>
+
+      <style jsx>{`
+        @keyframes marquee-scroll {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// METRIC BENTO CARD — massive numbers with whileHover tilt
+// ═══════════════════════════════════════════════════════════════════
+function MetricCard({
+  value,
+  label,
+  className = "",
+}: {
+  value: string;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      variants={cardVariant}
+      whileHover={{
+        scale: 1.05,
+        rotate: -1,
+        transition: { type: "spring", stiffness: 300, damping: 15 },
+      }}
+      className={`relative bg-white/[0.015] border border-white/5 hover:border-white/25 transition-colors duration-300 p-6 md:p-8 rounded-none overflow-hidden cursor-default group ${className}`}
+    >
+      {/* Corner accents */}
+      <div className="absolute top-0 left-0 w-8 h-[1px] bg-white/20" />
+      <div className="absolute top-0 left-0 w-[1px] h-8 bg-white/20" />
+      <div className="absolute bottom-0 right-0 w-8 h-[1px] bg-white/20" />
+      <div className="absolute bottom-0 right-0 w-[1px] h-8 bg-white/20" />
+
+      {/* Massive number */}
+      <div className="text-[clamp(2.5rem,6vw,5rem)] font-black leading-none text-white tracking-tight mb-2 group-hover:text-white transition-colors">
+        {value}
+      </div>
+      <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-500 block">
+        {label}
+      </span>
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ABOUT SECTION — High-impact 3-column recruiter bento grid
+// ═══════════════════════════════════════════════════════════════════
 export function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const quoteRef = useRef<HTMLParagraphElement>(null);
-  const chipsRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      // Heading letter stagger
-      if (headingRef.current) {
-        const text = headingRef.current.innerText;
-        headingRef.current.innerHTML = text
-          .split("")
-          .map(
-            (c) =>
-              `<span class="inline-block overflow-hidden"><span class="about-char inline-block">${
-                c === " " ? "&nbsp;" : c
-              }</span></span>`
-          )
-          .join("");
-
-        gsap.from(".about-char", {
-          y: 60,
-          opacity: 0,
-          duration: 0.9,
-          stagger: 0.025,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: "top 85%",
-            once: true,
-          },
-        });
-      }
-
-      // Quote paragraph fade in
-      if (quoteRef.current) {
-        gsap.from(quoteRef.current, {
-          opacity: 0,
-          y: 30,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: quoteRef.current,
-            start: "top 88%",
-            once: true,
-          },
-        });
-      }
-
-      // Chips stagger
-      if (chipsRef.current) {
-        gsap.from(Array.from(chipsRef.current.children), {
-          opacity: 0,
-          scale: 0.85,
-          y: 16,
-          duration: 0.65,
-          stagger: 0.12,
-          ease: "back.out(1.4)",
-          scrollTrigger: {
-            trigger: chipsRef.current,
-            start: "top 90%",
-            once: true,
-          },
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
+  const gridInView = useInView(gridRef, { once: true, margin: "-80px" });
 
   return (
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-32 px-4 md:px-20 z-10 overflow-hidden bg-[#050505]"
+      className="relative py-24 md:py-32 px-4 md:px-12 lg:px-20 z-10 overflow-hidden bg-[#050505]"
     >
       <div className="max-w-6xl mx-auto">
+        {/* ── Section Header ── */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          ref={headingRef}
+          initial={{ opacity: 0, y: 30 }}
+          animate={headingInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative"
+          className="mb-12 md:mb-16"
         >
-          <div className="relative bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors duration-500 p-8 md:p-16 rounded-none flex flex-col items-center text-center overflow-hidden w-full">
-            <div className="w-full flex justify-center overflow-hidden mb-10">
-              <h2
-                ref={headingRef}
-                className="text-[clamp(2rem,6vw,6rem)] font-black uppercase tracking-tighter whitespace-nowrap text-center text-[#FAFAFA] w-full"
-              >
-                Something About Me
-              </h2>
-            </div>
+          <span className="text-xs font-bold uppercase tracking-[0.3em] text-neutral-600 mb-4 block">
+            [ 01 / ABOUT ]
+          </span>
+          <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black uppercase tracking-tighter text-[#FAFAFA] leading-[0.95]">
+            Building the
+            <br />
+            <span className="text-neutral-600">Future Stack</span>
+          </h2>
+        </motion.div>
 
-            <p
-              ref={quoteRef}
-              className="text-xl md:text-2xl font-medium text-neutral-400 leading-relaxed max-w-5xl"
-            >
-              &ldquo;I don&apos;t just write code; I architect scalable solutions
-              that drive business growth. As a 3rd-year IT undergrad and GDSC
-              Core Lead, I have actively contributed to early-stage startups,
-              building and scaling their infrastructure to handle real-world
-              traffic. From optimising LLM platforms to sub-second latencies, to
-              orchestrating complex microservices in the Q-Ecosystem, I
-              specialise in taking products from{" "}
-              <span className="text-white font-bold">0 to 1</span> and
-              upscaling them to enterprise-level performance. If your team needs
-              a developer who thinks like a CTO and ships like a machine,
-              let&apos;s talk.&rdquo;
-            </p>
+        {/* ── 3-Column Bento Grid ── */}
+        <motion.div
+          ref={gridRef}
+          variants={gridContainerVariant}
+          initial="hidden"
+          animate={gridInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"
+        >
+          {/* ─── Row 1 ─── */}
 
-            <div
-              ref={chipsRef}
-              className="mt-12 flex gap-4 flex-wrap justify-center"
-            >
-              {CHIPS.map((chip) => (
-                <span
-                  key={chip.text}
-                  className={`px-6 py-2 bg-white/[0.01] rounded-none border text-sm font-bold uppercase tracking-widest ${chip.color}`}
-                >
-                  {chip.text}
+          {/* Bio Card — Spans 2 columns */}
+          <motion.div
+            variants={cardVariant}
+            whileHover={{
+              scale: 1.02,
+              rotate: -0.5,
+              transition: { type: "spring", stiffness: 300, damping: 15 },
+            }}
+            className="lg:col-span-2 relative bg-white/[0.015] border border-white/5 hover:border-white/25 transition-colors duration-300 p-8 md:p-10 rounded-none overflow-hidden flex flex-col justify-between min-h-[280px] cursor-default group"
+          >
+            {/* Corner accents */}
+            <div className="absolute top-0 left-0 w-10 h-[1px] bg-white/20" />
+            <div className="absolute top-0 left-0 w-[1px] h-10 bg-white/20" />
+            <div className="absolute bottom-0 right-0 w-10 h-[1px] bg-white/20" />
+            <div className="absolute bottom-0 right-0 w-[1px] h-10 bg-white/20" />
+
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600 block mb-5">
+                BIO
+              </span>
+              <p className="text-lg md:text-xl lg:text-2xl font-medium text-neutral-300 leading-relaxed max-w-2xl">
+                I&apos;m a 4th-year B.Tech IT student at{" "}
+                <span className="text-white font-bold">JSS Academy</span> and{" "}
+                <span className="text-white font-bold">
+                  GDSC Core Web Lead
                 </span>
-              ))}
+                . I don&apos;t just write code; I architect high-throughput
+                distributed systems. From building ACID-safe transaction engines
+                handling{" "}
+                <span className="text-white font-black">10,000+ msgs/sec</span>{" "}
+                to optimizing LLM pipelines that slash cloud costs by{" "}
+                <span className="text-white font-black">$142K+</span>, I
+                specialize in taking enterprise infrastructure from{" "}
+                <span className="text-white font-black">0 to 1</span>.
+              </p>
             </div>
-          </div>
+
+            <div className="mt-8 flex items-center gap-3">
+              <div className="w-2 h-2 bg-white rounded-none animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500">
+                Enterprise-Grade Full-Stack
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Metric Card 1 — Top Right: 10K+ msgs/sec */}
+          <MetricCard value="10K+" label="MSGS/SEC PROCESSED" />
+
+          {/* ─── Row 2 ─── */}
+
+          {/* Metric Card 2 — Bottom Left: LeetCode Peak */}
+          <MetricCard value="1868" label="LEETCODE PEAK (KNIGHT)" />
+
+          {/* Metric Card 3 — Bottom Center: Cloud Costs Saved */}
+          <MetricCard value="$142K+" label="CLOUD COSTS SAVED" />
+
+          {/* Metric Card 4 — Bottom Right: System Uptime */}
+          <MetricCard value="99.99%" label="SYSTEM UPTIME ENGINEERED" />
+
+          {/* ─── Row 3: Tech Marquee (Full Width) ─── */}
+          <motion.div
+            variants={cardVariant}
+            className="lg:col-span-3 relative bg-white/[0.015] border border-white/5 hover:border-white/15 transition-colors duration-300 py-6 px-4 rounded-none overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-8 h-[1px] bg-white/20" />
+            <div className="absolute top-0 left-0 w-[1px] h-8 bg-white/20" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600 block mb-4 px-2">
+              CORE STACK
+            </span>
+            <TechMarquee />
+          </motion.div>
         </motion.div>
       </div>
     </section>

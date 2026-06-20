@@ -15,6 +15,7 @@ import { WebGLScene } from "@/components/webgl/Scene";
 // ── Sections ──
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
+import { InternshipDashboard } from "@/components/sections/InternshipDashboard";
 import { SkillsSphere } from "@/components/sections/SkillsSphere";
 import { LeetCodeHeatmap } from "@/components/ui/LeetCodeHeatmap";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
@@ -123,6 +124,7 @@ export default function Home() {
           <HeroSection isLoaded={!loading} />
 
           <AboutSection />
+          <InternshipDashboard />
           <SkillsSphere />
           <LeetCodeHeatmap />
           <ProjectsSection />

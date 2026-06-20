@@ -1,12 +1,152 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
+import { useEffect, useRef, useState, useMemo, Suspense } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
 import { MagneticPull } from "@/components/ui/MagneticPull";
-import { FiDownload, FiArrowDown } from "react-icons/fi";
-import gsap from "gsap";
+import { FiDownload, FiMail } from "react-icons/fi";
 
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Float } from "@react-three/drei";
+import * as THREE from "three";
+
+// ═══════════════════════════════════════════════════════════════════
+// 3D WIREFRAME TORUS — continuous rotation behind hero text
+// ═══════════════════════════════════════════════════════════════════
+function WireframeTorus() {
+  const meshRef = useRef<THREE.Mesh>(null!);
+
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += delta * 0.12;
+      meshRef.current.rotation.y += delta * 0.18;
+      meshRef.current.rotation.z += delta * 0.04;
+    }
+  });
+
+  return (
+    <Float speed={1.2} rotationIntensity={0.25} floatIntensity={0.4}>
+      <mesh ref={meshRef} scale={3.2}>
+        <torusGeometry args={[1, 0.4, 36, 72]} />
+        <meshBasicMaterial
+          color="#FAFAFA"
+          wireframe
+          transparent
+          opacity={0.06}
+        />
+      </mesh>
+    </Float>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ABSTRACT NODES — scattered points with slow rotation
+// ═══════════════════════════════════════════════════════════════════
+function AbstractNodes({ count = 90 }: { count?: number }) {
+  const groupRef = useRef<THREE.Group>(null!);
+
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 9;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 7;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 5;
+    }
+    return pos;
+  }, [count]);
+
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.06;
+      groupRef.current.rotation.x += delta * 0.025;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={count}
+            array={positions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          color="#FAFAFA"
+          size={0.03}
+          transparent
+          opacity={0.12}
+          sizeAttenuation
+        />
+      </points>
+    </group>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HERO CANVAS — wraps WebGL background
+// ═══════════════════════════════════════════════════════════════════
+function HeroCanvas() {
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none">
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 60 }}
+        dpr={[1, 1.5]}
+        style={{ background: "transparent" }}
+        gl={{ alpha: true, antialias: true }}
+      >
+        <Suspense fallback={null}>
+          <WireframeTorus />
+          <AbstractNodes count={90} />
+          <ambientLight intensity={0.15} />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CHARACTER-LEVEL SPRING ANIMATION VARIANT
+// ═══════════════════════════════════════════════════════════════════
+const charContainerVariant = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.035,
+    },
+  },
+};
+
+const charVariant = {
+  hidden: {
+    y: 120,
+    opacity: 0,
+    rotateX: -25,
+  },
+  visible: {
+    y: 0,
+    opacity: 1,
+    rotateX: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 120,
+      damping: 14,
+      mass: 0.9,
+    },
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// HERO SECTION
+// ═══════════════════════════════════════════════════════════════════
 interface HeroSectionProps {
   isLoaded?: boolean;
 }
@@ -14,137 +154,53 @@ interface HeroSectionProps {
 const HERO_NAME = "ADARSH SINGH";
 
 const BADGES = [
-  { label: "B.Tech IT @ JSS", meta: "CGPA: 7.54" },
-  { label: "LeetCode Knight", meta: "Peak 1868 · More than 600 Problem Solved" },
-  { label: "GDSC Core Web Lead", meta: "Google Developer Student Clubs" },
+  { label: "B.TECH IT @ JSS", meta: "CGPA 7.54" },
+  { label: "LEETCODE KNIGHT", meta: "Peak 1868 · 600+ Solved" },
+  { label: "GDSC CORE WEB LEAD", meta: "Google DSC" },
 ];
 
 export function HeroSection({ isLoaded = false }: HeroSectionProps) {
   const { playWhoosh, playHover } = useCyberSounds();
 
   const sectionRef = useRef<HTMLElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const badgesRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
   const maskLayerRef = useRef<HTMLDivElement>(null);
 
-  // Scramble state
-  const [displayText, setDisplayText] = useState(HERO_NAME);
-  const [scrambleDone, setScrambleDone] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Name container Parallax states
+  // Mouse parallax
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springConfig = { stiffness: 60, damping: 22, mass: 0.6 };
-  const parallaxX = useSpring(mouseX, springConfig);
-  const parallaxY = useSpring(mouseY, springConfig);
+  const springCfg = { stiffness: 45, damping: 22, mass: 0.7 };
+  const parallaxX = useSpring(mouseX, springCfg);
+  const parallaxY = useSpring(mouseY, springCfg);
+  const bgParallaxX = useTransform(parallaxX, (v) => -v * 1.8);
+  const bgParallaxY = useTransform(parallaxY, (v) => -v * 1.8);
 
-  // 1. Name Scramble Decryption Effect
+  // Mobile check
   useEffect(() => {
-    if (!isLoaded) return;
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$/%_";
-    const target = HERO_NAME;
-    let iterations = 0;
-
-    const interval = setInterval(() => {
-      setDisplayText(
-        target
-          .split("")
-          .map((char, index) => {
-            if (char === " ") return " ";
-            if (index < iterations) return target[index];
-            return chars[Math.floor(Math.random() * chars.length)];
-          })
-          .join("")
-      );
-
-      iterations += 0.8;
-
-      if (iterations >= target.length) {
-        clearInterval(interval);
-        setDisplayText(target);
-        setScrambleDone(true);
-      }
-    }, 25);
-
-    return () => clearInterval(interval);
-  }, [isLoaded]);
-
-  // 2. GSAP character reveal entrance (runs after scramble completes)
-  useEffect(() => {
-    if (!isLoaded || !scrambleDone || !wrapperRef.current) return;
-
-    const ctx = gsap.context(() => {
-      // Letters slot up from hidden container
-      gsap.from(".hero-char", {
-        y: 110,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.02,
-        ease: "power4.out",
-        clearProps: "all",
-      });
-
-      if (subtitleRef.current) {
-        gsap.from(subtitleRef.current, {
-          opacity: 0,
-          y: 20,
-          duration: 0.8,
-          ease: "power3.out",
-          delay: 0.3,
-          clearProps: "all",
-        });
-      }
-
-      if (badgesRef.current) {
-        gsap.from(Array.from(badgesRef.current.children), {
-          opacity: 0,
-          y: 15,
-          duration: 0.7,
-          stagger: 0.08,
-          ease: "power3.out",
-          delay: 0.5,
-          clearProps: "all",
-        });
-      }
-
-      if (ctaRef.current) {
-        gsap.from(ctaRef.current, {
-          opacity: 0,
-          y: 15,
-          duration: 0.7,
-          ease: "power3.out",
-          delay: 0.7,
-          clearProps: "all",
-        });
-      }
-    }, wrapperRef);
-
-    return () => ctx.revert();
-  }, [isLoaded, scrambleDone]);
-
-  // 3. Mouse spotlight mask movement
+  // Mouse spotlight mask
   useEffect(() => {
     let rafId: number;
-
     const onMove = (e: MouseEvent) => {
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
         const layer = maskLayerRef.current;
         const section = sectionRef.current;
         if (!layer || !section) return;
-
         const rect = section.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const mask = `radial-gradient(circle 260px at ${x}px ${y}px, black 20%, transparent 75%)`;
+        const mask = `radial-gradient(circle 300px at ${x}px ${y}px, black 15%, transparent 70%)`;
         layer.style.webkitMaskImage = mask;
         (layer.style as unknown as { maskImage: string }).maskImage = mask;
       });
     };
-
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove);
@@ -152,130 +208,190 @@ export function HeroSection({ isLoaded = false }: HeroSectionProps) {
     };
   }, []);
 
-  // 4. Parallax shift listener
+  // Parallax listener
   useEffect(() => {
-    const handleParallax = (e: MouseEvent) => {
+    const handler = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 30; // -15px to 15px
-      const y = (e.clientY / innerHeight - 0.5) * 30; // -15px to 15px
-      mouseX.set(x);
-      mouseY.set(y);
+      mouseX.set((e.clientX / innerWidth - 0.5) * 50);
+      mouseY.set((e.clientY / innerHeight - 0.5) * 35);
     };
-
-    window.addEventListener("mousemove", handleParallax, { passive: true });
-    return () => window.removeEventListener("mousemove", handleParallax);
+    window.addEventListener("mousemove", handler, { passive: true });
+    return () => window.removeEventListener("mousemove", handler);
   }, [mouseX, mouseY]);
+
+  const nameChars = HERO_NAME.split("");
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-32 pb-10 z-10 bg-[#050505]"
+      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20 pb-10 z-10 bg-[#050505]"
     >
-      <motion.div
-        ref={wrapperRef}
-        animate={{ opacity: isLoaded ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-        className="text-center w-full max-w-7xl mx-auto flex flex-col items-center"
-      >
-        {/* Name: Base layer + White reveal layer + Parallax container */}
+      {/* ── 3D WebGL Background ── */}
+      {!isMobile && (
         <motion.div
-          style={{ x: parallaxX, y: parallaxY }}
-          className="relative mb-10 cursor-crosshair select-none whitespace-nowrap w-full flex justify-center"
+          className="absolute inset-0 z-0"
+          style={{ x: bgParallaxX, y: bgParallaxY }}
         >
-          {/* Base: Dimmed Gray Name */}
-          <h1
-            aria-label={HERO_NAME}
-            className="text-[9.5vw] font-black tracking-tighter leading-none text-neutral-800 text-center uppercase"
+          <HeroCanvas />
+        </motion.div>
+      )}
+
+      {/* ── Content Layer ── */}
+      <AnimatePresence>
+        {isLoaded && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative z-10 text-center w-full max-w-7xl mx-auto flex flex-col items-center"
           >
-            {displayText.split("").map((char, i) => (
-              <span
-                key={i}
-                className="inline-block overflow-hidden"
-                style={{ lineHeight: "0.9" }}
+            {/* ════════════════════════════════════════════════════
+                MASSIVE NAME — 12vw, character-by-character spring
+               ════════════════════════════════════════════════════ */}
+            <motion.div
+              style={{ x: parallaxX, y: parallaxY }}
+              className="relative mb-4 cursor-crosshair select-none w-full"
+            >
+              {/* Base: dimmed layer */}
+              <motion.h1
+                variants={charContainerVariant}
+                initial="hidden"
+                animate="visible"
+                aria-label={HERO_NAME}
+                className="text-[12vw] md:text-[12vw] font-black tracking-tighter leading-[0.85] text-neutral-800 text-center uppercase"
+                style={{ fontFamily: "'Outfit', sans-serif" }}
               >
-                <span
-                  className="hero-char inline-block"
-                  style={{ whiteSpace: char === " " ? "pre" : "normal" }}
-                >
-                  {char === " " ? "\u00A0" : char}
-                </span>
-              </span>
-            ))}
-          </h1>
+                {nameChars.map((char, i) => (
+                  <motion.span
+                    key={i}
+                    variants={charVariant}
+                    className="inline-block"
+                    style={{
+                      whiteSpace: char === " " ? "pre" : "normal",
+                      perspective: "600px",
+                    }}
+                  >
+                    {char === " " ? "\u00A0" : char}
+                  </motion.span>
+                ))}
+              </motion.h1>
 
-          {/* Spotlight layer: revealed by mouse radial mask */}
-          <div
-            ref={maskLayerRef}
-            aria-hidden
-            className="absolute inset-0 pointer-events-none flex justify-center items-center"
-            style={{ WebkitMaskImage: "none" }}
-          >
-            <h1 className="text-[9.5vw] font-black tracking-tighter leading-none text-white text-center uppercase">
-              {displayText.split("").map((char, i) => (
-                <span
-                  key={i}
-                  className="inline-block"
-                  style={{ whiteSpace: char === " " ? "pre" : "normal" }}
+              {/* Spotlight mask layer — pure white revealed by mouse */}
+              <div
+                ref={maskLayerRef}
+                aria-hidden
+                className="absolute inset-0 pointer-events-none flex justify-center items-center"
+                style={{ WebkitMaskImage: "none" }}
+              >
+                <h1
+                  className="text-[12vw] md:text-[12vw] font-black tracking-tighter leading-[0.85] text-white text-center uppercase"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
                 >
-                  {char === " " ? "\u00A0" : char}
-                </span>
+                  {nameChars.map((char, i) => (
+                    <span
+                      key={i}
+                      className="inline-block"
+                      style={{ whiteSpace: char === " " ? "pre" : "normal" }}
+                    >
+                      {char === " " ? "\u00A0" : char}
+                    </span>
+                  ))}
+                </h1>
+              </div>
+            </motion.div>
+
+            {/* ════════════════════════════════════════════════════
+                SUBTITLE
+               ════════════════════════════════════════════════════ */}
+            <motion.p
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
+              className="text-base md:text-xl text-neutral-500 font-medium tracking-tight mb-10 max-w-2xl"
+            >
+              Architecting{" "}
+              <span className="text-white font-bold">High-Throughput AI</span>{" "}
+              & Distributed Systems.
+            </motion.p>
+
+            {/* ════════════════════════════════════════════════════
+                FLOATING INTERACTIVE BADGES
+                → Scale up, invert colors, brutalist shadow on hover
+               ════════════════════════════════════════════════════ */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              className="flex flex-wrap justify-center gap-4 mb-12"
+            >
+              {BADGES.map((b, i) => (
+                <motion.div
+                  key={b.label}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: 0.9 + i * 0.12,
+                    type: "spring",
+                    stiffness: 130,
+                    damping: 16,
+                  }}
+                  whileHover={{
+                    scale: 1.12,
+                    backgroundColor: "#FAFAFA",
+                    color: "#050505",
+                    boxShadow: "8px 8px 0px 0px #FAFAFA",
+                    transition: { duration: 0.15 },
+                  }}
+                  onMouseEnter={playHover}
+                  className="px-6 py-3 rounded-none bg-white/[0.02] border-2 border-white/10 cursor-default group"
+                  style={{ color: "#FAFAFA" }}
+                >
+                  <span className="text-xs font-black uppercase tracking-[0.15em] group-hover:text-black transition-colors duration-150">
+                    {b.label}
+                  </span>
+                  <span className="text-[10px] text-neutral-500 group-hover:text-neutral-700 ml-2 transition-colors duration-150">
+                    / {b.meta}
+                  </span>
+                </motion.div>
               ))}
-            </h1>
-          </div>
-        </motion.div>
+            </motion.div>
 
-        {/* Subtitle */}
-        <p
-          ref={subtitleRef}
-          className="text-lg md:text-2xl text-neutral-400 font-medium tracking-tight mb-16 max-w-2xl"
-        >
-          Architecting <span className="text-white font-bold">High-Throughput AI</span> &amp; Distributed Systems.
-        </p>
-
-        {/* Monochromatic Badges */}
-        <div ref={badgesRef} className="flex flex-wrap justify-center gap-4 mb-16">
-          {BADGES.map((b) => (
-            <div
-              key={b.label}
-              onMouseEnter={playHover}
-              className="px-6 py-3 rounded-none bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all duration-300 group cursor-default"
+            {/* ════════════════════════════════════════════════════
+                CTA BUTTONS — glitch-pulse border + instant invert
+               ════════════════════════════════════════════════════ */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.3, duration: 0.7 }}
+              className="flex flex-wrap justify-center gap-5"
             >
-              <span className="text-xs font-black uppercase tracking-widest text-neutral-400 group-hover:text-white transition-colors">
-                {b.label}
-              </span>
-              <span className="text-xs text-neutral-600 group-hover:text-neutral-400 ml-2 transition-colors">
-                / {b.meta}
-              </span>
-            </div>
-          ))}
-        </div>
+              <MagneticPull strength={0.3}>
+                <a
+                  href="/Adarsh_Singh_Software_Engineer_2027.pdf"
+                  download
+                  onClick={playWhoosh}
+                  onMouseEnter={playHover}
+                  className="hero-cta-btn group inline-flex items-center gap-3 px-10 py-5 border-2 border-white/20 text-white rounded-none font-black uppercase tracking-[0.2em] text-sm relative overflow-hidden bg-transparent hover:bg-white hover:text-black hover:border-white transition-all duration-[0ms]"
+                >
+                  <span className="relative z-10">Download Résumé</span>
+                  <FiDownload className="relative z-10 text-xl group-hover:translate-y-0.5 transition-transform" />
+                </a>
+              </MagneticPull>
 
-        {/* Monochromatic Magnetic CTA */}
-        <div ref={ctaRef}>
-          <MagneticPull strength={0.3}>
-            <a
-              href="/Adarsh_Singh_Software_Engineer_2027.pdf"
-              download
-              onClick={playWhoosh}
-              onMouseEnter={playHover}
-              className="group inline-flex items-center gap-3 px-10 py-5 border border-white/10 hover:border-white text-white rounded-none font-black uppercase tracking-[0.2em] text-sm transition-all duration-300 relative overflow-hidden bg-white/[0.01] hover:bg-white/[0.04] interactive"
-            >
-              <span className="relative z-10">Download Résumé</span>
-              <FiDownload className="relative z-10 text-xl group-hover:translate-y-0.5 transition-transform" />
-              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-            </a>
-          </MagneticPull>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none"
-          animate={{ y: [0, 8, 0], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <FiArrowDown className="text-white text-xl" />
-        </motion.div>
-      </motion.div>
+              <MagneticPull strength={0.3}>
+                <a
+                  href="#contact"
+                  onMouseEnter={playHover}
+                  className="hero-cta-btn group inline-flex items-center gap-3 px-10 py-5 border-2 border-white/20 text-white rounded-none font-black uppercase tracking-[0.2em] text-sm relative overflow-hidden bg-transparent hover:bg-white hover:text-black hover:border-white transition-all duration-[0ms]"
+                >
+                  <span className="relative z-10">Hire Me</span>
+                  <FiMail className="relative z-10 text-xl group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+              </MagneticPull>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
