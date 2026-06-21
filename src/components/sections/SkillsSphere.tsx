@@ -38,6 +38,7 @@ interface ChaosSwarmProps {
 function ChaosSwarm({ isMobile }: ChaosSwarmProps) {
   const groupRef = useRef<THREE.Group>(null);
   const textRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const tempV = useMemo(() => new THREE.Vector3(), []);
 
   // 1. Duplicate skills to exactly 200 words (particles)
   const particles = useMemo(() => {
@@ -60,10 +61,6 @@ function ChaosSwarm({ isMobile }: ChaosSwarmProps) {
   const currentSigma = useRef(10);
   const currentRho = useRef(28);
   const beta = 8 / 3;
-
-  // Pre-allocated variables for GC-free frame loops
-  const baseColor = useMemo(() => new THREE.Color("#1A1A1A"), []);
-  const targetColor = useMemo(() => new THREE.Color("#FAFAFA"), []);
 
   useFrame((state, delta) => {
     // Cap delta-time to prevent numerical divergence in Euler integration
@@ -113,7 +110,7 @@ function ChaosSwarm({ isMobile }: ChaosSwarmProps) {
       }
 
       // Scale coordinates down to fit comfortable viewport bounds
-      const scale = isMobile ? 0.16 : 0.22;
+      const scale = isMobile ? 0.25 : 0.35;
       const posX = p.x * scale;
       const posY = p.y * scale;
       const posZ = (p.z - 24) * scale; // Offset Z to center the attractor symmetry at root origin
@@ -127,13 +124,15 @@ function ChaosSwarm({ isMobile }: ChaosSwarmProps) {
       // ── E. DEPTH FADE (FOG / DOF EFFECT) ──
       const mat = mesh.material as THREE.MeshBasicMaterial;
       if (mat) {
-        // Front coordinates are Z > 0, back coordinates are Z < 0
-        const depthFactor = (posZ + 5.5) / 11; // Normalize: 0 (back) to 1 (front)
-        const depth = Math.max(0.05, Math.min(1.0, depthFactor));
+        // Calculate dynamic depth fading based on world Z position
+        mesh.getWorldPosition(tempV);
+        const zRange = 25 * scale;
+        const depthFactor = (tempV.z + zRange) / (2 * zRange);
+        const depth = Math.max(0, Math.min(1.0, depthFactor));
 
-        // Scale and opacity adjustments for immersive void depth
-        mat.opacity = THREE.MathUtils.lerp(mat.opacity, depth, 0.1);
-        mat.color.copy(baseColor).lerp(targetColor, depth);
+        // Smoothly interpolate opacity between 0.3 (back) and 1.0 (front)
+        const targetOpacity = THREE.MathUtils.lerp(0.3, 1.0, depth);
+        mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.1);
       }
     }
   });
@@ -145,8 +144,9 @@ function ChaosSwarm({ isMobile }: ChaosSwarmProps) {
           key={idx}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ref={(el) => (textRefs.current[idx] = el as any)}
-          fontSize={isMobile ? 0.18 : 0.26}
+          fontSize={isMobile ? 0.23 : 0.33}
           fontWeight={900}
+          color="#FAFAFA"
           anchorX="center"
           anchorY="middle"
           material-transparent={true}
@@ -191,14 +191,14 @@ export function SkillsSphere() {
       <div className="w-full h-full max-w-5xl relative flex items-center justify-center cursor-grab active:cursor-grabbing">
         <Canvas
           dpr={[1, 2]}
-          camera={{ position: [0, 0, 18], fov: 50 }}
+          camera={{ position: [0, 0, 22], fov: 50 }}
           gl={{ antialias: true, alpha: false }}
           onCreated={({ gl }) => {
             gl.setClearColor(new THREE.Color("#000000"));
           }}
         >
           {/* Black fog gives void depth */}
-          <fog attach="fog" args={["#000000", 12, 28]} />
+          <fog attach="fog" args={["#000000", 12, 32]} />
 
           <Suspense fallback={null}>
             <ChaosSwarm isMobile={isMobile} />
