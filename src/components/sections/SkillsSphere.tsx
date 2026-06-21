@@ -336,9 +336,9 @@ export function SkillsSphere() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Update Game Phase to Complete when 15 unique skills are extracted
+  // Update Game Phase to Complete when 9 unique skills are extracted
   useEffect(() => {
-    if (extractedSkills.size >= 15) {
+    if (extractedSkills.size >= 9) {
       setGamePhase(2);
       document.body.style.cursor = "default";
     }
@@ -466,13 +466,13 @@ export function SkillsSphere() {
               MAINFRAME_DATABASE_BREACH // SYSTEM_BREACH_LIVE
             </div>
             <div className="text-sm font-bold text-neutral-200">
-              DATA EXTRACTED: <span className="text-[#00FF41]">{extractedSkills.size}</span> / 15
+              DATA EXTRACTED: <span className="text-[#00FF41]">{extractedSkills.size}</span> / 9
             </div>
             <div className="w-48 bg-neutral-900 h-1.5 border border-neutral-800 overflow-hidden relative">
               <motion.div
                 className="bg-[#00FF41] h-full shadow-[0_0_10px_rgba(0,255,65,0.5)]"
                 initial={{ width: 0 }}
-                animate={{ width: `${Math.min(100, (extractedSkills.size / 15) * 100)}%` }}
+                animate={{ width: `${Math.min(100, (extractedSkills.size / 9) * 100)}%` }}
                 transition={{ duration: 0.3 }}
               />
             </div>
