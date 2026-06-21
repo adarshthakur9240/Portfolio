@@ -65,6 +65,7 @@ function FloatingPopUp({ text, x, y, z, onComplete }: FloatingPopUpProps) {
 
   return (
     <Text
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={ref as any}
       position={[x, y, z]}
       fontSize={0.28}
@@ -300,7 +301,7 @@ function ChaosSwarm({
                 document.body.style.cursor = "pointer";
               }
             }}
-            onPointerOut={(e) => {
+            onPointerOut={() => {
               if (gamePhase === 1) {
                 document.body.style.cursor = "crosshair";
               }
