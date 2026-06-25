@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { Canvas } from "@react-three/fiber";
 import { useGLTF, Float, PresentationControls, Environment, Lightformer, Text } from "@react-three/drei";
 import { motion } from "framer-motion";
@@ -6,7 +7,12 @@ import { motion } from "framer-motion";
 // Preload the model
 useGLTF.preload("/models/card.glb");
 
-export default function Lanyard() {
+interface LanyardProps {
+  position?: [number, number, number];
+  gravity?: [number, number, number];
+}
+
+const Lanyard: React.FC<LanyardProps> = () => {
   return (
     <motion.div
       initial={{ y: -800, opacity: 0 }}
@@ -39,7 +45,9 @@ export default function Lanyard() {
       </Canvas>
     </motion.div>
   );
-}
+};
+
+export default Lanyard;
 
 function CardModel() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,47 +67,43 @@ function CardModel() {
       <mesh geometry={nodes.clip.geometry} material={materials.metal} />
       <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
 
-      {/* Custom 3D Typography - FORCED MASSIVE Y-AXIS SHIFT UPWARDS (+0.55) */}
-      <group position={[0, 0.55, 0.016]}>
-
-        {/* Massive Stacked Name */}
+      {/* Custom 3D Typography - Hard-locked to card center */}
+      <group position={[0, 0.05, 0.016]}>
+        {/* Name */}
         <Text
-          position={[0, 0.15, 0]}
-          fontSize={0.14}
-          lineHeight={0.85}
+          position={[0, 0.12, 0]}
+          fontSize={0.1}
           color="#111111"
           font="https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Black.ttf"
           anchorX="center"
           anchorY="middle"
         >
-          {"ADARSH\nSINGH"}
+          ADARSH SINGH
         </Text>
 
-        {/* Subtitle */}
+        {/* Role */}
         <Text
-          position={[0, -0.06, 0]}
-          fontSize={0.045}
+          position={[0, -0.05, 0]}
+          fontSize={0.04}
           color="#666666"
           font="https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf"
-          letterSpacing={0.1}
           anchorX="center"
           anchorY="middle"
         >
           SYSTEM ARCHITECT
         </Text>
 
-        {/* Status Indicator at the bottom */}
+        {/* Status */}
         <Text
-          position={[0, -0.22, 0]}
-          fontSize={0.05}
+          position={[0, -0.15, 0]}
+          fontSize={0.04}
           color="#00FF41"
           font="https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Black.ttf"
           anchorX="center"
           anchorY="middle"
         >
-          {"\u25CF OPEN TO WORK"}
+          {"\u25CF AVAILABLE"}
         </Text>
-
       </group>
     </group>
   );
