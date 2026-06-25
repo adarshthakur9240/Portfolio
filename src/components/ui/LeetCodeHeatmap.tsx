@@ -252,7 +252,7 @@ export function LeetCodeHeatmap() {
         {/* ══ LeetCode Activity ══════════════════════════════════════════════ */}
         <h2
           ref={headingRef}
-          className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter text-center"
+          className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter text-center text-white text-opacity-100"
         >
           LeetCode Activity
         </h2>
@@ -279,7 +279,7 @@ export function LeetCodeHeatmap() {
         <div className="flex flex-col items-center">
           <h2
             ref={gh2Ref}
-            className="text-3xl md:text-5xl font-black mb-2 uppercase tracking-tighter text-center whitespace-nowrap"
+            className="text-3xl md:text-5xl font-black mb-2 uppercase tracking-tighter text-center whitespace-nowrap text-white text-opacity-100"
           >
             GitHub Activity
           </h2>

@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SoundProvider } from "@/context/SoundContext";
 import { TerminalProvider } from "@/context/TerminalContext";
+import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Adarsh Singh — Software Architect",
@@ -19,7 +23,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased bg-cinematic-dark text-foreground">
+      <body className={cn(inter.className, "antialiased bg-cinematic-dark text-foreground")}>
         <SoundProvider>
           <TerminalProvider>{children}</TerminalProvider>
         </SoundProvider>

@@ -1,15 +1,18 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useState, useRef } from "react";
 import { FiGithub, FiLinkedin, FiExternalLink, FiInstagram } from "react-icons/fi";
 import { SiLeetcode } from "react-icons/si";
 import { MagneticPull } from "../ui/MagneticPull";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
+import Lanyard from "@/components/Lanyard";
 
 export function ContactFooter() {
   const { playHover, playWhoosh } = useCyberSounds();
   const [formState, setFormState] = useState<"idle" | "submitting" | "success">("idle");
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,18 +24,18 @@ export function ContactFooter() {
   };
 
   const socials = [
-    { icon: <FiLinkedin size={32} />, link: "https://linkedin.com/in/adarsh-singh-7683612a4", name: "LinkedIn" },
-    { icon: <FiGithub size={32} />, link: "https://github.com/adarshthakur9240", name: "GitHub" },
-    { icon: <SiLeetcode size={32} />, link: "https://leetcode.com/adarsh__singh_", name: "LeetCode" },
-    { icon: <FiInstagram size={32} />, link: "https://instagram.com/adarshhh__thakur", name: "Instagram" },
+    { icon: <FiLinkedin size={32} className="text-white" />, link: "https://linkedin.com/in/adarsh-singh-7683612a4", name: "LinkedIn" },
+    { icon: <FiGithub size={32} className="text-white" />, link: "https://github.com/adarshthakur9240", name: "GitHub" },
+    { icon: <SiLeetcode size={32} className="text-white" />, link: "https://leetcode.com/adarsh__singh_", name: "LeetCode" },
+    { icon: <FiInstagram size={32} className="text-white" />, link: "https://instagram.com/adarshhh__thakur", name: "Instagram" },
   ];
 
   return (
-    <footer id="contact" className="relative py-32 px-4 md:px-20 z-10 bg-[#050505] border-t border-white/10 overflow-hidden rounded-none">
+    <footer ref={sectionRef} id="contact" className="relative py-32 px-4 md:px-20 z-10 bg-[#050505] border-t border-white/10 overflow-hidden rounded-none">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         
         {/* Left Side */}
-        <div className="space-y-12">
+        <div className="relative w-full lg:w-1/2 flex flex-col justify-center space-y-12">
           <h2 className="text-6xl md:text-8xl lg:text-9xl font-black uppercase tracking-tighter leading-tight text-[#FAFAFA]">
             Let&apos;s Build<br/>Something Big.
           </h2>
@@ -55,6 +58,14 @@ export function ContactFooter() {
               </MagneticPull>
             ))}
           </div>
+
+          {/* Physics Lanyard - Only mounts when in view so gravity pulls it down live */}
+          {isInView && (
+            <Lanyard 
+              position={[0, 0, 20]} 
+              gravity={[0, -40, 0]} 
+            />
+          )}
         </div>
 
         {/* Right Side - Form */}

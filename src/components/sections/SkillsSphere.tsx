@@ -254,15 +254,46 @@ function ChaosSwarm({
       // Billboard mesh towards camera
       mesh.lookAt(state.camera.position);
 
-      // Depth fade logic
+      const isExtracted = extractedSkills.has(p.word);
+
+      // ── 3D Proximity Scaling & Color Effect ──
+      const mouseDistance = state.raycaster.ray.distanceToPoint(mesh.position);
+      const baseScale = isExtracted ? 1.35 : 1.0;
+      const maxProximityScale = isExtracted ? 1.8 : 1.5;
+      const proximityRadius = 3.5;
+
+      let targetScaleValue = baseScale;
+      let targetColorHex = isExtracted ? "#00FF41" : "#AAAAAA";
+
       const mat = mesh.material as THREE.MeshBasicMaterial;
+      if (mouseDistance < proximityRadius) {
+        const factor = 1 - (mouseDistance / proximityRadius);
+        targetScaleValue = THREE.MathUtils.lerp(baseScale, maxProximityScale, factor);
+        
+        if (mat && mat.color) {
+          const baseColor = new THREE.Color(isExtracted ? "#00FF41" : "#AAAAAA");
+          const whiteColor = new THREE.Color("#FFFFFF");
+          const targetColor = new THREE.Color().lerpColors(baseColor, whiteColor, factor);
+          mat.color.lerp(targetColor, 0.15);
+        }
+      } else {
+        if (mat && mat.color) {
+          const targetColor = new THREE.Color(targetColorHex);
+          mat.color.lerp(targetColor, 0.15);
+        }
+      }
+
+      // Smoothly lerp the scale vector
+      const currentScaleValue = THREE.MathUtils.lerp(mesh.scale.x, targetScaleValue, 0.15);
+      mesh.scale.setScalar(currentScaleValue);
+
+      // Depth fade logic
       if (mat) {
         mesh.getWorldPosition(tempV);
         const zRange = 25 * scale;
         const depthFactor = (tempV.z + zRange) / (2 * zRange);
         const depth = Math.max(0, Math.min(1.0, depthFactor));
 
-        const isExtracted = extractedSkills.has(p.word);
         const minOpacity = isExtracted ? 0.8 : 0.3;
         const targetOpacity = THREE.MathUtils.lerp(minOpacity, 1.0, depth);
         mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.1);
@@ -282,7 +313,7 @@ function ChaosSwarm({
             fontSize={isMobile ? 0.23 : 0.33}
             scale={isExtracted ? 1.35 : 1.0} // Scale up permanently once extracted
             fontWeight={900}
-            color={isExtracted ? "#00FF41" : "#FAFAFA"}
+            color={isExtracted ? "#00FF41" : "#AAAAAA"}
             anchorX="center"
             anchorY="middle"
             material-transparent={true}
@@ -390,9 +421,9 @@ export function SkillsSphere() {
         <span className="text-[10px] font-mono tracking-[0.45em] text-neutral-500 block mb-3">
           [ LORENZ_CHAOS_ATTRACTOR // SYSTEM_BREACH_INITIALIZED ]
         </span>
-        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-neutral-200">
+        <h1 className="text-6xl sm:text-7xl md:text-9xl font-black uppercase tracking-tighter text-white">
           CHAOS_SWARM
-        </h2>
+        </h1>
       </div>
 
       {/* Attractor Canvas with Cinematic Fade Out */}

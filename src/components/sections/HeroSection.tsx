@@ -11,6 +11,7 @@ import { useEffect, useRef, useState, useMemo, Suspense } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
 import { MagneticPull } from "@/components/ui/MagneticPull";
 import { FiDownload, FiMail } from "react-icons/fi";
+import RotatingText from "@/components/RotatingText";
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
@@ -303,16 +304,34 @@ export function HeroSection({ isLoaded = false }: HeroSectionProps) {
             {/* ════════════════════════════════════════════════════
                 SUBTITLE
                ════════════════════════════════════════════════════ */}
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
-              className="text-base md:text-xl text-neutral-500 font-medium tracking-tight mb-10 max-w-2xl"
+              className="flex flex-row items-center justify-center gap-3 text-lg sm:text-xl md:text-2xl font-medium mt-6 mb-8"
             >
-              Architecting{" "}
-              <span className="text-white font-bold">High-Throughput AI</span>{" "}
-              & Distributed Systems.
-            </motion.p>
+              {/* Static Text - Forced to stay on one line */}
+              <span className="text-gray-400 whitespace-nowrap">Architecting</span>
+              
+              {/* Quarantine Wrapper - Isolates the animation physics from the flex layout */}
+              <div className="relative flex items-center h-[35px] sm:h-[45px] overflow-hidden">
+                <RotatingText
+                  texts={[
+                    'High-Throughput AI',
+                    'Distributed Systems',
+                    'Sub-Millisecond APIs'
+                  ]}
+                  mainClassName="text-white font-bold whitespace-nowrap"
+                  staggerFrom="last"
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "-120%" }}
+                  staggerDuration={0.025}
+                  transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                  rotationInterval={3000}
+                />
+              </div>
+            </motion.div>
 
             {/* ════════════════════════════════════════════════════
                 FLOATING INTERACTIVE BADGES
@@ -363,7 +382,7 @@ export function HeroSection({ isLoaded = false }: HeroSectionProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 0.7 }}
-              className="flex flex-wrap justify-center gap-5"
+              className="flex flex-wrap justify-center items-center gap-5"
             >
               <MagneticPull strength={0.3}>
                 <a
@@ -378,16 +397,25 @@ export function HeroSection({ isLoaded = false }: HeroSectionProps) {
                 </a>
               </MagneticPull>
 
-              <MagneticPull strength={0.3}>
-                <a
-                  href="#contact"
-                  onMouseEnter={playHover}
-                  className="hero-cta-btn group inline-flex items-center gap-3 px-10 py-5 border-2 border-white/20 text-white rounded-none font-black uppercase tracking-[0.2em] text-sm relative overflow-hidden bg-transparent hover:bg-white hover:text-black hover:border-white transition-all duration-[0ms]"
-                >
-                  <span className="relative z-10">Hire Me</span>
-                  <FiMail className="relative z-10 text-xl group-hover:-translate-y-0.5 transition-transform" />
-                </a>
-              </MagneticPull>
+              <motion.a
+                href="mailto:singhadadarsh9240@gmail.com?subject=Interview%20Invite:%20Adarsh%20Singh"
+                className="relative flex items-center justify-center w-[200px] h-[55px] border border-white/50 text-white font-bold tracking-[0.2em] text-sm overflow-hidden group"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              >
+                {/* Hover Background Fill */}
+                <span className="absolute inset-0 w-full h-full bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out z-0"></span>
+                
+                {/* Text */}
+                <span className="relative z-10 group-hover:text-black transition-colors duration-300 flex items-center gap-3">
+                  HIRE ME 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </span>
+              </motion.a>
             </motion.div>
           </motion.div>
         )}

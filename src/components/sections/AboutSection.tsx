@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import VariableProximity from "@/components/VariableProximity";
 
 // ═══════════════════════════════════════════════════════════════════
 // MARQUEE DATA
@@ -140,7 +141,7 @@ function MetricCard({
 // ABOUT SECTION — High-impact 3-column recruiter bento grid
 // ═══════════════════════════════════════════════════════════════════
 export function AboutSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -149,7 +150,7 @@ export function AboutSection() {
 
   return (
     <section
-      ref={sectionRef}
+      ref={containerRef}
       id="about"
       className="relative py-24 md:py-32 px-4 md:px-12 lg:px-20 z-10 overflow-hidden bg-[#050505]"
     >
@@ -165,11 +166,26 @@ export function AboutSection() {
           <span className="text-xs font-bold uppercase tracking-[0.3em] text-neutral-600 mb-4 block">
             [ 01 / ABOUT ]
           </span>
-          <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-black uppercase tracking-tighter text-[#FAFAFA] leading-[0.95]">
-            Building the
-            <br />
-            <span className="text-neutral-600">Future Stack</span>
-          </h2>
+          <div className="flex flex-col leading-none mb-10 z-10 relative">
+            <VariableProximity
+              label="BUILDING THE"
+              className="text-6xl sm:text-7xl md:text-8xl lg:text-[10vw] font-black text-white tracking-tighter uppercase"
+              fromFontVariationSettings="'wght' 300"
+              toFontVariationSettings="'wght' 900"
+              containerRef={containerRef}
+              radius={200}
+              falloff="linear"
+            />
+            <VariableProximity
+              label="FUTURE STACK"
+              className="text-6xl sm:text-7xl md:text-8xl lg:text-[10vw] font-black text-gray-600 tracking-tighter uppercase"
+              fromFontVariationSettings="'wght' 300"
+              toFontVariationSettings="'wght' 900"
+              containerRef={containerRef}
+              radius={200}
+              falloff="linear"
+            />
+          </div>
         </motion.div>
 
         {/* ── 3-Column Bento Grid ── */}
