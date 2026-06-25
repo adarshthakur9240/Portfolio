@@ -10,7 +10,7 @@ import {
 import { useEffect, useRef, useState, useMemo, Suspense } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
 import { MagneticPull } from "@/components/ui/MagneticPull";
-import { FiDownload, FiMail } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 import RotatingText from "@/components/RotatingText";
 
 import { Canvas, useFrame } from "@react-three/fiber";

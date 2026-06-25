@@ -263,7 +263,7 @@ function ChaosSwarm({
       const proximityRadius = 3.5;
 
       let targetScaleValue = baseScale;
-      let targetColorHex = isExtracted ? "#00FF41" : "#AAAAAA";
+      const targetColorHex = isExtracted ? "#00FF41" : "#AAAAAA";
 
       const mat = mesh.material as THREE.MeshBasicMaterial;
       if (mouseDistance < proximityRadius) {

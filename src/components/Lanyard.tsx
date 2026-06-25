@@ -42,6 +42,7 @@ export default function Lanyard() {
 }
 
 function CardModel() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { nodes, materials } = useGLTF("/models/card.glb") as any;
   return (
     <group position={[0, -1, 0]} scale={2.5}>
