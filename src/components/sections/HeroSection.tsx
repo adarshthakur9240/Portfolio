@@ -161,6 +161,17 @@ const BADGES = [
 ];
 
 export function HeroSection({ isLoaded = false }: HeroSectionProps) {
+  const mailSubject = encodeURIComponent("Interview Invitation: Software Engineering Opportunity - Adarsh Singh");
+  const mailBody = encodeURIComponent(`Hi Adarsh,
+
+I've reviewed your portfolio and was impressed by your technical work. We would like to invite you for an interview to discuss potential opportunities.
+
+Are you available for a chat during the upcoming week?
+
+Best regards,
+[Recruiter Name]`);
+  const mailtoHref = `mailto:singhadadarsh9240@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+
   const { playWhoosh, playHover } = useCyberSounds();
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -398,7 +409,8 @@ export function HeroSection({ isLoaded = false }: HeroSectionProps) {
               </MagneticPull>
 
               <motion.a
-                href="mailto:singhadadarsh9240@gmail.com?subject=Interview%20Invite:%20Adarsh%20Singh"
+                href={mailtoHref}
+                target="_self"
                 className="relative flex items-center justify-center w-[200px] h-[55px] border border-white/50 text-white font-bold tracking-[0.2em] text-sm overflow-hidden group"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

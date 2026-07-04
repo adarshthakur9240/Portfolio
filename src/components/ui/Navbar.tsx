@@ -13,6 +13,17 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
+  const mailSubject = encodeURIComponent("Interview Invitation: Software Engineering Opportunity - Adarsh Singh");
+  const mailBody = encodeURIComponent(`Hi Adarsh,
+
+I've reviewed your portfolio and was impressed by your technical work. We would like to invite you for an interview to discuss potential opportunities.
+
+Are you available for a chat during the upcoming week?
+
+Best regards,
+[Recruiter Name]`);
+  const mailtoHref = `mailto:singhadadarsh9240@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+
   const { playHover, playWhoosh, soundEnabled, toggleSound } = useCyberSounds();
   const [scrolled, setScrolled] = useState(false);
 
@@ -104,7 +115,8 @@ export function Navbar() {
           {/* Hire Me (Monochromatic) */}
           <div className="relative group">
             <a
-              href="mailto:singhadadarsh9240@gmail.com?subject=Job%20Opportunity%20from%20Portfolio"
+              href={mailtoHref}
+              target="_self"
               onMouseEnter={playHover}
               onClick={playWhoosh}
             >
