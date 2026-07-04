@@ -119,10 +119,9 @@ Best regards,
               target="_self"
               onMouseEnter={playHover}
               onClick={playWhoosh}
+              className="relative inline-block px-7 py-2.5 bg-transparent text-white text-xs font-black uppercase tracking-[0.2em] rounded-md border border-white/10 hover:border-white hover:bg-white/5 transition-all duration-300 interactive active:scale-95"
             >
-              <button className="relative px-7 py-2.5 bg-transparent text-white text-xs font-black uppercase tracking-[0.2em] rounded-md border border-white/10 hover:border-white hover:bg-white/5 transition-all duration-300 interactive active:scale-95">
-                Hire Me
-              </button>
+              Hire Me
             </a>
           </div>
         </div>
