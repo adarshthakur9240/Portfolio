@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// ── Phase 1 infrastructure ──
+import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 
 // ── Shell ──
 import { CustomCursor } from "@/components/ui/CustomCursor";
@@ -44,27 +46,14 @@ export default function Home() {
     return () => window.removeEventListener("mousedown", handler);
   }, [playClick]);
 
-  // Sync Lenis smooth scroll with GSAP ScrollTrigger & Scroll Velocity check
+  // Warp-speed sound: fires when scroll velocity exceeds threshold.
+  // The Lenis/GSAP setup lives in <SmoothScrollProvider>; we only add
+  // the velocity check here because it needs the sound context.
   useEffect(() => {
     if (loading) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Initialize Lenis
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    lenis.on("scroll", ScrollTrigger.update);
-
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-
-    gsap.ticker.lagSmoothing(0);
-
-    // Scroll trigger velocity check for playing warp-speed sound
     let throttleWarp = false;
     const scrollTriggerInstance = ScrollTrigger.create({
       onUpdate: (self) => {
@@ -80,13 +69,12 @@ export default function Home() {
     });
 
     return () => {
-      lenis.destroy();
-      gsap.ticker.remove(lenis.raf);
       scrollTriggerInstance.kill();
     };
   }, [loading, playWarpSpeed]);
 
   return (
+    <SmoothScrollProvider>
     <main className="relative min-h-screen bg-cinematic-dark text-foreground selection:bg-white selection:text-black">
       {/* Cinematic animated grain/noise overlay */}
       <div 
@@ -139,5 +127,6 @@ export default function Home() {
       {/* Terminal Override is rendered outside the main wrapper so it stays active */}
       <TerminalOverride />
     </main>
+    </SmoothScrollProvider>
   );
 }
