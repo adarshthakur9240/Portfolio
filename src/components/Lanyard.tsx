@@ -83,14 +83,14 @@ function CardModel() {
 
         {/* Role */}
         <Text
-          position={[0, -0.05, 0]}
-          fontSize={0.04}
+          position={[0, -0.0, 0]}
+          fontSize={0.06}
           color="#666666"
           font="https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf"
           anchorX="center"
           anchorY="middle"
         >
-          SYSTEM ARCHITECT
+          SOFTWARE ENGINEER
         </Text>
 
         {/* Status */}
