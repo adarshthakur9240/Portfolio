@@ -20,7 +20,17 @@ const COMMANDS: Record<string, string> = {
 
   whoami: `{
   "developer": "Adarsh Singh",
-  "role": "Full-Stack Architect & System Architect",
+  "role": "Full-Stack Engineer & System Architect",
+  "what u need really ": "i can build it for u",
+  "why u here ?? ": "just checking out my portfolio nahh!!! ->to hire me right???",
+  "Whats my password ??": "haha just kidding",
+  "Whats my email ??": "You wanna have email rn okay now u have -> singhadadarsh920@gmail.com now ping me rn",
+  "Whats my phone ??": "+91 - 6386247822 -> ping me if u wanna have a talk rn",
+  "Whats my instagram ??": "@adarshhh__thakur u can dm me there but i rarely use it lol",
+  "Whats my linkedin ??": "https://www.linkedin.com/in/adarsh-singh-7683612a4/ ->ping me rn",
+  "Whats my leetcode ??": "https://leetcode.com/u/adarsh__singh_/,
+  "Whats my github ??": "https://github.com/adarshthakur9240",
+  "Whats my twitter ??": "sorry i don’t have yet :(",
   "education": "JSS Academy of Technical Education",
   "interests": [
     "High-Throughput Webapps",
@@ -39,11 +49,11 @@ const COMMANDS: Record<string, string> = {
   "cat stats.txt": `[FILE READ]: stats.txt
 --------------------------------------------------
 COMPETITIVE PROGRAMMING TELEMETRY:
-  Peak Rating        : 1637
+  Peak Rating        : 1862
   LeetCode Status    : Knight
-  Problems Solved    : More than 600 Problems Solved
-  Active Streak      : More than 300 Days
-  Last Synced        : 2026-06-18
+  Problems Solved    : More than 650 Problems Solved
+  Active Streak      : More than 350 Days
+  Last Synced        : Just a sec ago !
 --------------------------------------------------`,
 };
 
@@ -217,7 +227,7 @@ export function TerminalOverride() {
             exit={{ opacity: 0, y: 10 }}
             className="fixed left-8 bottom-8 z-[150] px-3 py-1.5 bg-[#050505]/90 border border-[#FAFAFA]/10 text-[10px] font-mono text-neutral-500 pointer-events-none select-none"
           >
-            CTRL + ` FOR SYSTEM OVERRIDE
+            CTRL/CMD + ` FOR SYSTEM OVERRIDE
           </motion.div>
         )}
       </AnimatePresence>

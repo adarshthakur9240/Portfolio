@@ -7,20 +7,112 @@ import {
   useTransform,
   AnimatePresence,
 } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, Suspense } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
 import { MagneticPull } from "@/components/ui/MagneticPull";
 import { FiDownload } from "react-icons/fi";
 import RotatingText from "@/components/RotatingText";
-import dynamic from "next/dynamic";
 
-// ── Phase 2: 3D Hero Scene — lazy-loaded, no SSR ──
-const DynamicHeroScene = dynamic(
-  () => import("@/components/webgl/HeroScene").then((m) => ({ default: m.HeroScene })),
-  { ssr: false, loading: () => null }
-);
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Float } from "@react-three/drei";
+import * as THREE from "three";
 
+// ═══════════════════════════════════════════════════════════════════
+// 3D WIREFRAME TORUS — continuous rotation behind hero text
+// ═══════════════════════════════════════════════════════════════════
+function WireframeTorus() {
+  const meshRef = useRef<THREE.Mesh>(null!);
 
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += delta * 0.12;
+      meshRef.current.rotation.y += delta * 0.18;
+      meshRef.current.rotation.z += delta * 0.04;
+    }
+  });
+
+  return (
+    <Float speed={1.2} rotationIntensity={0.25} floatIntensity={0.4}>
+      <mesh ref={meshRef} scale={3.2}>
+        <torusGeometry args={[1, 0.4, 36, 72]} />
+        <meshBasicMaterial
+          color="#FAFAFA"
+          wireframe
+          transparent
+          opacity={0.06}
+        />
+      </mesh>
+    </Float>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ABSTRACT NODES — scattered points with slow rotation
+// ═══════════════════════════════════════════════════════════════════
+function AbstractNodes({ count = 90 }: { count?: number }) {
+  const groupRef = useRef<THREE.Group>(null!);
+
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 9;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 7;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 5;
+    }
+    return pos;
+  }, [count]);
+
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.06;
+      groupRef.current.rotation.x += delta * 0.025;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={count}
+            array={positions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          color="#FAFAFA"
+          size={0.03}
+          transparent
+          opacity={0.12}
+          sizeAttenuation
+        />
+      </points>
+    </group>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HERO CANVAS — wraps WebGL background
+// ═══════════════════════════════════════════════════════════════════
+function HeroCanvas() {
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none">
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 60 }}
+        dpr={[1, 1.5]}
+        style={{ background: "transparent" }}
+        gl={{ alpha: true, antialias: true }}
+      >
+        <Suspense fallback={null}>
+          <WireframeTorus />
+          <AbstractNodes count={90} />
+          <ambientLight intensity={0.15} />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // CHARACTER-LEVEL SPRING ANIMATION VARIANT
@@ -63,9 +155,9 @@ interface HeroSectionProps {
 const HERO_NAME = "ADARSH SINGH";
 
 const BADGES = [
-  { label: "B.TECH IT @ JSS", meta: "CGPA 7.54" },
-  { label: "LEETCODE KNIGHT", meta: "Peak 1868 · 600+ Solved" },
-  { label: "GDSC CORE WEB LEAD", meta: "Google DSC" },
+  { label: "B.TECH IT @ JSS", meta: "CGPA 7.56" },
+  { label: "LEETCODE KNIGHT", meta: "Peak 1868 · 650+ Solved" },
+  { label: "GDSC CORE WEB LEAD", meta: "GDSC" },
 ];
 
 export function HeroSection({ isLoaded = false }: HeroSectionProps) {
@@ -146,15 +238,15 @@ Best regards,
       ref={sectionRef}
       className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20 pb-10 z-10 bg-[#050505]"
     >
-      {/* ── Phase 2: 3D Hero Scene ──
-          Parallax wrapper only active on desktop; HeroScene handles its own
-          mobile / low-end / prefers-reduced-motion guards internally. */}
-      <motion.div
-        className="absolute inset-0 z-0"
-        style={!isMobile ? { x: bgParallaxX, y: bgParallaxY } : undefined}
-      >
-        <DynamicHeroScene />
-      </motion.div>
+      {/* ── 3D WebGL Background ── */}
+      {!isMobile && (
+        <motion.div
+          className="absolute inset-0 z-0"
+          style={{ x: bgParallaxX, y: bgParallaxY }}
+        >
+          <HeroCanvas />
+        </motion.div>
+      )}
 
       {/* ── Content Layer ── */}
       <AnimatePresence>

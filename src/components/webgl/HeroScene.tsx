@@ -69,6 +69,20 @@ function ReactiveParticleField({
     return arr;
   }, [count]);
 
+  // Explicit material — same reason as WireframeReactor (guarantees white)
+  const pointsMat = useMemo(
+    () =>
+      new THREE.PointsMaterial({
+        color: new THREE.Color("#ffffff"),
+        size: 0.04,
+        transparent: true,
+        opacity: 0.35,
+        sizeAttenuation: true,
+        depthWrite: false,
+      }),
+    []
+  );
+
   // Lerp target for mouse parallax
   const target = useRef({ x: 0, y: 0 });
 
@@ -76,7 +90,6 @@ function ReactiveParticleField({
     const g = groupRef.current;
     if (!g || reducedMotion) return;
 
-    // Ease toward mouse — factor keeps it lagging behind the cursor
     const lerpFactor = 1 - Math.pow(0.08, delta);
     target.current.x = THREE.MathUtils.lerp(
       target.current.x,
@@ -89,7 +102,6 @@ function ReactiveParticleField({
       lerpFactor
     );
 
-    // Apply as gentle rotation (not position snap)
     g.rotation.y = THREE.MathUtils.lerp(
       g.rotation.y,
       target.current.x * 0.3,
@@ -101,13 +113,12 @@ function ReactiveParticleField({
       lerpFactor
     );
 
-    // Slow ambient drift
     g.rotation.z += delta * 0.015;
   });
 
   return (
     <group ref={groupRef}>
-      <points>
+      <points material={pointsMat}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
@@ -116,24 +127,24 @@ function ReactiveParticleField({
             itemSize={3}
           />
         </bufferGeometry>
-        <pointsMaterial
-          color="#ffffff"
-          size={0.04}
-          transparent
-          opacity={0.35}
-          sizeAttenuation
-          depthWrite={false}
-        />
       </points>
     </group>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// WIREFRAME REACTOR (TORUS — large ring spanning most of the hero viewport)
-// Slowly auto-rotates and bobs via <Float>. Mouse parallax is also applied.
-// Camera at z=6, fov=55 → visible height ≈ 6.3 units.
-// Main torus radius 2.2 fills ~70 % of that height, matching the original.
+// WIREFRAME REACTOR
+// Two concentric tori that bleed beyond the viewport edges on all sides.
+//
+// WHY explicit material instances: R3F's declarative <meshBasicMaterial
+// color="..."> shorthand can silently fall back to Three.js's default orange
+// when wireframe=true is combined with transparency.  Creating the material
+// imperatively via useMemo guarantees the color is set.
+//
+// SIZE rationale:
+//   Camera z=6, fov=55  →  visible height ≈ 6.3 units.
+//   Main torus radius 5.5 ≈ 175 % of that → edges bleed off-screen on all
+//   sides, matching the "fills the whole hero" look from the reference.
 // ─────────────────────────────────────────────────────────────────────────────
 interface WireframeReactorProps {
   reducedMotion: boolean;
@@ -144,16 +155,39 @@ function WireframeReactor({ reducedMotion }: WireframeReactorProps) {
   const { mouse } = useThree();
   const targetRot = useRef({ x: 0, y: 0 });
 
+  // Explicit material instances — color is guaranteed, no JSX prop ambiguity
+  const matInner = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: new THREE.Color("#FAFAFA"),
+        wireframe: true,
+        transparent: true,
+        opacity: 0.30,
+        depthWrite: false,
+      }),
+    []
+  );
+
+  const matOuter = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: new THREE.Color("#FAFAFA"),
+        wireframe: true,
+        transparent: true,
+        opacity: 0.10,
+        depthWrite: false,
+      }),
+    []
+  );
+
   useFrame((_, delta) => {
     const m = meshRef.current;
     if (!m) return;
 
     if (!reducedMotion) {
-      // Roll the ring on x and z — feels more natural for a torus
       m.rotation.x += delta * 0.10;
       m.rotation.z += delta * 0.04;
 
-      // Mouse parallax on top of auto-rotation
       const lf = 1 - Math.pow(0.06, delta);
       targetRot.current.x = THREE.MathUtils.lerp(
         targetRot.current.x,
@@ -176,30 +210,19 @@ function WireframeReactor({ reducedMotion }: WireframeReactorProps) {
       rotationIntensity={reducedMotion ? 0 : 0.2}
       floatIntensity={reducedMotion ? 0 : 0.5}
     >
-      {/* Main ring — large, matches original torus background */}
-      <mesh ref={meshRef}>
-        <torusGeometry args={[2.2, 0.38, 28, 90]} />
-        <meshBasicMaterial
-          color="#e5e5e5"
-          wireframe
-          transparent
-          opacity={0.28}
-        />
+      {/* Main ring — radius 5.5 bleeds off all viewport edges */}
+      <mesh ref={meshRef} material={matInner}>
+        <torusGeometry args={[5.5, 0.55, 36, 120]} />
       </mesh>
 
-      {/* Outer accent ring — slightly larger, very faint, tilted for depth */}
-      <mesh rotation={[0.4, 0, 0.2]}>
-        <torusGeometry args={[2.8, 0.18, 16, 70]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          wireframe
-          transparent
-          opacity={0.08}
-        />
+      {/* Outer ring — even larger, very faint depth layer, tilted */}
+      <mesh rotation={[0.35, 0, 0.15]} material={matOuter}>
+        <torusGeometry args={[7.0, 0.28, 24, 90]} />
       </mesh>
     </Float>
   );
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCENE CONTENTS (rendered inside the Canvas)
@@ -240,10 +263,11 @@ function SceneContents({
             mipmapBlur
           />
           <ChromaticAberration
-            offset={chromaticOffset}
-            radialModulation={false}
-            modulationOffset={0}
-          />
+      offset={chromaticOffset}
+      radialModulation={false}
+      modulationOffset={0}
+    />
+         
         </EffectComposer>
       )}
     </>

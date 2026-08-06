@@ -8,11 +8,11 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Adarsh Singh — Software Architect",
+  title: "Adarsh Singh — Software Engineer",
   description:
     "Architecting High-Throughput AI & Distributed Systems. Full-Stack Engineer specialising in scalable infrastructure.",
   openGraph: {
-    title: "Adarsh Singh — Software Architect",
+    title: "Adarsh Singh — Software Engineer",
     description: "Architecting High-Throughput AI & Distributed Systems.",
     type: "website",
   },

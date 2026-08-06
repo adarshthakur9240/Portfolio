@@ -25,6 +25,51 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    title: "Auroth",
+    subtitle: "Autonomous Multi-Agent GitHub Issue Resolver",
+    description:
+      "Rust-based async agent-orchestration state machine that autonomously plans, codes, tests, and opens production GitHub PRs end-to-end — achieving a 100% resolve rate with automatic 3-attempt retry logic and multi-provider LLM failover.",
+    image: "/projects/Auroth.png",
+    link: "https://auroth.vercel.app/",
+    techStack: "Rust / Axum / Next.js / PostgreSQL / Redis / E2B",
+    systemCheck: "SYS_INIT // AUTONOMOUS AGENT ONLINE",
+    telemetry: [
+      { label: "Benchmark Resolve Rate", value: "100%" },
+      { label: "LLM Failover Providers", value: "4" },
+      { label: "Auto-Retry Logic", value: "3 attempts" },
+    ],
+  },
+  {
+    title: "Isolyth",
+    subtitle: "Sandboxed MCP Tool Server for AI Agents",
+    description:
+      "Production-grade MCP tool server enabling AI agents to safely execute real-world tools via a WASM-sandboxed (wasmtime) engine enforcing memory limits, instruction fueling, and wall-clock timeouts — hardened against SSRF and path-traversal.",
+    image: "/projects/Isolyth.png",
+    link: "https://isolyth.vercel.app/",
+    techStack: "Python / WASM (wasmtime) / Redis / PostgreSQL / Docker",
+    systemCheck: "SYS_INIT // WASM SANDBOX SECURED",
+    telemetry: [
+      { label: "Throughput", value: "535–600 req/s" },
+      { label: "Error Rate", value: "0%" },
+      { label: "Sandbox Overhead", value: "15–30ms" },
+    ],
+  },
+  {
+    title: "Multi-Agent Orchestrator",
+    subtitle: "LangGraph System with Human Governance",
+    description:
+      "Supervisor-worker multi-agent engine coordinating 4 specialized agents (Research, Analysis, Writer, Human-Review) with PostgreSQL-backed checkpointing for full crash-recovery and a human-in-the-loop escalation mechanism.",
+    image: "/projects/Multi-Agent%20Orchestrator.png",
+    link: "https://multi-agent-orchestration-system-ui.vercel.app/",
+    techStack: "Python / LangGraph / PostgreSQL / Redis / Celery / FastAPI / Next.js",
+    systemCheck: "SYS_INIT // SUPERVISOR-WORKER MESH LIVE",
+    telemetry: [
+      { label: "Autonomous Task Completion", value: "100%" },
+      { label: "Crash-Recovery Rate", value: "100%" },
+      { label: "Escalation Accuracy", value: "0% false-positive" },
+    ],
+  },
+  {
     title: "OckhamGrid",
     subtitle: "Algorithmic Intelligence Platform",
     description:

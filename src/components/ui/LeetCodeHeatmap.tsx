@@ -191,15 +191,15 @@ export function LeetCodeHeatmap() {
   const gh2Ref     = useRef<HTMLHeadingElement>(null);
 
   // Resume-accurate stats
-  const LC_TOTAL_SOLVED = 612;
+  const LC_TOTAL_SOLVED = 650;
   const LC_PEAK_RATING  = 1862;
-  const LC_TOTAL_VIEWS  = 6000;
+  const LC_TOTAL_VIEWS  = 9000;
 
   // GitHub architect stats
-  const GH_COMMITS  = 450;
+  const GH_COMMITS  = 600;
   const GH_PRS      = 212;
-  const GH_REPOS    = 32;
-  const GH_VIEWS    = 1150;
+  const GH_REPOS    = 35;
+  const GH_VIEWS    = 2000;
 
   useEffect(() => {
     playDataScan();
@@ -257,13 +257,13 @@ export function LeetCodeHeatmap() {
           LeetCode Activity
         </h2>
         <p className="text-center text-gray-500 text-sm uppercase tracking-widest mb-12 font-mono">
-          More than 300 day streak · {LC_TOTAL_SOLVED} problems solved
+          More than 350 day streak · {LC_TOTAL_SOLVED} problems solved
         </p>
 
         {/* LeetCode stat counters */}
         <div className="flex justify-center gap-12 md:gap-16 mb-12">
           <AnimatedCounter to={LC_TOTAL_SOLVED} label="Problems Solved"  suffix="+" />
-          <AnimatedCounter to={300}             label="Day Streak"      suffix="+" />
+          <AnimatedCounter to={350}             label="Day Streak"      suffix="+" />
           <AnimatedCounter to={LC_PEAK_RATING}  label="Peak Rating" />
           <AnimatedCounter to={LC_TOTAL_VIEWS}  label="Total Views" suffix="+" />
         </div>
@@ -290,7 +290,7 @@ export function LeetCodeHeatmap() {
           {/* GitHub architect stat counters */}
           <div className="flex justify-center gap-10 md:gap-14 mb-12 w-full">
             <AnimatedCounter to={GH_COMMITS} label="Total Commits"  suffix="+" />
-            <AnimatedCounter to={GH_PRS}     label="Pull Requests"  suffix="+" />
+            <AnimatedCounter to={GH_PRS}     label="Pull Requests Merged"  suffix="+" />
             <AnimatedCounter to={GH_REPOS}   label="Repositories"   suffix="+"/>
             <AnimatedCounter to={GH_VIEWS}   label="Total Views"   suffix="+" />
           </div>
