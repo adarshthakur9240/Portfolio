@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiGithub, FiLinkedin, FiInstagram } from "react-icons/fi";
+import { FiGithub, FiLinkedin, FiInstagram, FiGitlab } from "react-icons/fi";
 import { SiLeetcode } from "react-icons/si";
 import { MagneticPull } from "../ui/MagneticPull";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
@@ -43,8 +43,9 @@ export default function TerminalContact() {
   };
 
   const socials = [
-    { icon: <FiLinkedin size={40} />, link: "https://linkedin.com/in/adarsh-thakur-7683612a4", name: "LinkedIn" },
+    { icon: <FiLinkedin size={40} />, link: "https://linkedin.com/in/adarsh-singh-7683612a4", name: "LinkedIn" },
     { icon: <FiGithub size={40} />, link: "https://github.com/adarshthakur9240", name: "GitHub" },
+    { icon: <FiGitlab size={40} />, link: "https://gitlab.com/singhadadarsh9240", name: "GitLab" },
     { icon: <SiLeetcode size={40} />, link: "https://leetcode.com/adarsh__singh_", name: "LeetCode" },
     { icon: <FiInstagram size={40} />, link: "https://instagram.com/adarshhh__thakur", name: "Instagram" },
   ];

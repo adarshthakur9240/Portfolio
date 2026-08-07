@@ -227,7 +227,7 @@ export function TerminalOverride() {
             exit={{ opacity: 0, y: 10 }}
             className="fixed left-8 bottom-8 z-[150] px-3 py-1.5 bg-[#050505]/90 border border-[#FAFAFA]/10 text-[10px] font-mono text-neutral-500 pointer-events-none select-none"
           >
-            CTRL/CMD + ` FOR SYSTEM OVERRIDE
+            CTRL/CMD + ` FOR A GAME U WOULD LOVE TO SEE
           </motion.div>
         )}
       </AnimatePresence>

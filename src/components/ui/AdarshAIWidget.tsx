@@ -14,81 +14,104 @@ interface Message {
 // ── Knowledge Base ────────────────────────────────────────────────────────────
 // Keyword → response mapping. Keys are lowercase for case-insensitive matching.
 const KB: Record<string, string> = {
+  // ── IDENTITY 
+  "who":
+    "Adarsh Singh. Full-Stack Engineer & System Architect. You're probably here to hire him — let's not pretend otherwise. 😏",
+
+  "developer":
+    "Adarsh Singh — the guy who wrote this chatbot instead of sleeping. Full-Stack Engineer & System Architect.",
+
+  "why are you here ?":
+    "'Just checking out the portfolio,' huh? Sure. We both know you're here to hire him. It's okay, I won't tell.",
+
+  "password":
+    "Haha, nice try. That one's not in the training data. 🔒",
+
+  // ── PROJECTS: NEW ──
+  "auroth":
+    "**Auroth** is an autonomous multi-agent GitHub issue resolver, built in Rust (Axum + Tokio). It plans, codes, tests, and opens production PRs end-to-end — 100% resolve rate on a self-curated benchmark, with 3-attempt retry logic and a 4-provider LLM failover so no single API outage takes it down. Basically it does the annoying part of engineering so Adarsh doesn't have to. 🤖",
+
+  "isolyth":
+    "**Isolyth** is a WASM-sandboxed MCP tool server that lets AI agents safely run real-world tools — DB queries, file I/O, web fetches — without accidentally nuking your system. Hardened against SSRF and path-traversal, sustains 535–600 req/s at 0% errors, sandbox overhead is a laughably small 15–30ms. Security-conscious AND fast. Rare combo.",
+
+  "multi-agent orchestrator":
+    "**Multi-Agent Orchestrator** — a LangGraph supervisor-worker system with 4 specialized agents (Research, Analysis, Writer, Human-Review) and full crash-recovery via Postgres checkpointing. It even knows when to stop and ask a human instead of confidently hallucinating. Wish more people had that instinct, honestly.",
+
+  "orchestrator":
+    "Multi-Agent Orchestrator: 4 AI agents, 1 supervisor, 100% autonomous task completion across test scenarios, 0% false-positive escalations. It's basically a well-run team — unlike most Zoom meetings.",
+
+  // ── PROJECTS: EXISTING ──
   "og":
-    "I architected **OckhamGrid**, an autonomous AI AST Engine. It detects complexity hotspots and automates PR merges using Zero-Trust sandboxing. It achieved sub-millisecond latency and saved $142K+ in cloud costs!",
+    "**OckhamGrid** — an autonomous AI AST Engine that hunts down complexity hotspots and auto-merges PRs with Zero-Trust sandboxing. Sub-millisecond latency, $142K+ in cloud savings. It refactors code faster than most people finish their coffee.",
   "ockham":
-    "I architected **OckhamGrid**, an autonomous AI AST Engine. It detects complexity hotspots and automates PR merges using Zero-Trust sandboxing.",
+    "**OckhamGrid**: AI AST Engine, Zero-Trust sandboxing, automates PR merges. Basically a very opinionated, very fast code janitor.",
   "vyzrox":
-    "**Vyzrox** is a high-performance distributed AI system powered by a local WebAssembly (WASM) neural core. It runs entirely on-device with zero cloud dependencies, zero latency, and absolute privacy.",
+    "**Vyzrox** runs on a local WASM neural core — zero cloud, zero latency, zero \"oops the API is down\" moments. It just works, on-device, always.",
   "vyz":
-    "**Vyzrox** is a high-performance distributed AI system powered by a local WebAssembly (WASM) neural core. It runs entirely on-device.",
+    "**Vyzrox**: on-device WASM neural core, no cloud dependency, no drama.",
   "q-ecosystem":
-    "I architected **Q-Ecosystem** using Next.js 14 + Turborepo — a B2B SaaS with 4 micro-apps in a monorepo. It enforces strict Row Level Security (RLS) + RBAC via Supabase, achieves sub-80ms p99 API latency, and sub-200ms FCP. Live at qrento.in 🚀",
-
+    "**Q-Ecosystem** (qrento.in) — B2B SaaS, 4 micro-apps in a Turborepo monorepo, strict RLS + RBAC, sub-80ms p99 latency, sub-200ms FCP. It's live, it's fast, and yes it's actually in production, not just a localhost screenshot. 🚀",
   "qrento":
-    "Q-Ecosystem (qrento.in) is a multi-tenant SaaS platform I built solo — Turborepo monorepo, 4 micro-apps, Supabase RLS, Redis caching, sub-80ms p99 latency.",
-
+    "Q-Ecosystem — built solo. Turborepo monorepo, Supabase RLS, Redis caching, sub-80ms p99. Go check qrento.in, it's real.",
   "pawalert":
-    "**PawAlert** is a Gov-Tech SaaS for real-time animal alerts. I built it with PostGIS for spatial queries, Redis + WebSockets for live syncing, handling 5,000+ concurrent connections with 99.9% webhook delivery rate. Live at pawalert.in 🐾",
-
+    "**PawAlert** — Gov-Tech, real-time animal alerts. PostGIS for spatial queries, 5,000+ concurrent WebSocket connections, 99.9% webhook delivery. Saving strays one geo-query at a time. 🐾 pawalert.in",
   "resume builder":
-    "The **AI Resume Builder** uses streaming LLMs (Gemini + OpenAI) to achieve sub-second first-token latency. It hits 92% ATS keyword extraction accuracy and reduced PDF rendering memory by 40%. Live at ai-resume-builder-theta-azure.vercel.app ✨",
-
+    "**AI Resume Builder** — streaming LLMs, sub-second first-token latency, 92% ATS extraction accuracy, 40% less PDF-rendering memory. Ironic that it might help someone get a job while its creator is still job-hunting, but here we are.",
   "ai resume":
-    "The **AI Resume Builder** uses streaming LLMs (Gemini + OpenAI) to achieve sub-second first-token latency. It hits 92% ATS keyword extraction accuracy and reduced PDF rendering memory by 40%.",
+    "AI Resume Builder: streaming LLMs, sub-1s first token, 92% ATS accuracy. Genuinely useful, unlike most resume advice on LinkedIn.",
 
+  // ── ACHIEVEMENTS ──
   "leetcode":
-    "Adarsh is a **LeetCode Knight** 🏅 — Peak Rating: 1867, 600+ problems solved, 300+ day streak! He specialises in Dynamic Programming, Graphs, and System Design.",
-
+    "**LeetCode Knight** 🏅 — Peak Rating 1868, 700+ problems solved, 350+ day streak. DP, Graphs, System Design. He argues with ChatGPT about optimal Big-O for fun. This is a red flag or a green flag depending on your team culture.",
   "knight":
-    "Adarsh earned the **LeetCode Knight** badge with a peak contest rating of 1867. He's solved 600+ problems and holds a 300+ day streak.",
-
+    "LeetCode Knight badge, peak rating 1868, 700+ problems. Genuinely earned, not farmed with easy problems at 2am. Okay maybe a few were.",
   "rating":
-    "Adarsh's peak LeetCode contest rating is **1867** (Knight tier). He competes regularly and maintains a 300+ day streak.",
-
+    "Peak LeetCode rating: **1868** (Knight tier). Competes regularly. Streak's longer than most people's attention spans.",
   "skills":
-    "Adarsh's core stack: **TypeScript, C++, Python** · **Next.js 14, React, Tailwind, Framer Motion, GSAP** · **Node.js, Express, PostgreSQL, Redis, MongoDB, WebSockets** · **Turborepo, Vercel, Oracle Cloud, LLMs (OpenAI, Gemini)**",
-
+    "Core stack: **TypeScript, Rust, Go, C++, Python** · **Next.js 14, React, Tailwind, GSAP, Three.js** · **Node.js, PostgreSQL, Redis, WebSockets** · **LangGraph, MCP, LLM orchestration, WASM**. Yes, that's a lot. No, he's not sleeping enough.",
   "stack":
-    "Full-stack: Next.js 14, TypeScript, PostgreSQL, Redis, Supabase, WebSockets, Turborepo, Vercel. Also experienced with Python, C++, and LLM APIs.",
-
+    "Full-stack + distributed systems + AI agent infra: Next.js, Rust, Python, Postgres, Redis, LangGraph, WASM. He collects tech stacks the way other people collect Pokémon cards.",
   "experience":
-    "Adarsh is a 4th-year B.Tech IT student at JSS Institute (2022–2027). He has built 3 production SaaS products (Q-Ecosystem, PawAlert, AI Resume Builder) and led the GDSC Core Web team — onboarding 500+ students.",
-
+    "Final-year B.Tech IT @ JSS (2023–2027), currently interning as Backend & AI Engineer. Shipped a trading engine doing 10,000+ msgs/sec at sub-5ms latency during the internship. He treats 'intern' as a suggestion, not a limit.",
   "gdsc":
-    "As **GDSC Core Web Lead**, Adarsh onboarded 500+ students into the developer ecosystem and led technical workshops for 200+ attendees.",
+    "GDSC Core Web Lead — onboarded 500+ students, ran workshops for 200+ attendees. Turns out he's decent at explaining things too, not just building them.",
 
+  // ── CONTACT / PERSONAL (from his own quirky list) ──
   "hire":
-    "Adarsh is **actively open** to Full-Stack and Full-time SWE roles! 📧 singhadadarsh9240@gmail.com · 🔗 linkedin.com/in/adarsh-thakur-7683612a4",
-
+    "Adarsh is **actively looking** for Full-Stack / Backend SWE roles. Fair warning: if you don't reach out, he WILL find your recruiting inbox. 📧 singhadadarsh9240@gmail.com",
   "contact":
-    "Reach Adarsh at 📧 singhadadarsh9240@gmail.com or on LinkedIn: linkedin.com/in/adarsh-thakur-7683612a4. He's open to full-time & internship roles.",
-
+    "You want the email? Fine, you've got it: **singhadadarsh9240@gmail.com**. Now go ping him, don't just sit here reading a chatbot.",
+  "email":
+    "singhadadarsh9240@gmail.com — now you have it, so use it. This is your sign.",
+  "phone":
+    "+91-6386247822. Ping if you actually want to talk, not just to see if I'd give it out. (I did. Here it is.)",
+  "instagram":
+    "@adarshhh__thakur — you can DM there but he barely checks it, so honestly just email him instead.",
+  "linkedin":
+    "linkedin.com/in/adarsh-thakur-7683612a4 — connect, ping, whatever gets a response fastest.",
+  "twitter":
+    "No Twitter/X yet. One social platform he hasn't conquered. Give him time.",
   "available":
-    "Yes! Adarsh is currently open to **Full-Stack** and **Backend** engineering roles — full-time or internship. Drop him an email: singhadadarsh9240@gmail.com",
-
+    "Yes. Open to Full-Stack and Backend roles, full-time or internship. The only thing standing between you and hiring him is you not emailing him yet.",
   "github":
-    "GitHub: github.com/adarshthakur9240 — 450+ commits, 212+ PRs, 32+ repositories. Mostly TypeScript, Next.js, and full-stack SaaS projects.",
-
+    "github.com/adarshthakur9240 — 650+ commits, 212+ PRs Merged , 32+ repos. Go look, I promise it's not just a bunch of 'Update README.md' commits.",
   "project":
-    "Top projects: **Q-Ecosystem** (B2B SaaS monorepo), **PawAlert** (Gov-Tech WebSockets), **AI Resume Builder** (streaming LLMs). All are live in production!",
-
+    "Recent builds: **Auroth** (autonomous PR agent), **Isolyth** (sandboxed AI tool server), **Multi-Agent Orchestrator** (LangGraph system), plus **OckhamGrid**, **Vyzrox**, **Q-Ecosystem**, **PawAlert**, and the AI Resume Builder. All shipped, all live. No vaporware here.",
   "certif":
-    "Certifications: Oracle Cloud Infrastructure 2025 AI Foundations Associate · DeepLearning.AI: Building AI Voice Agents · Google Cloud: Intro to Generative AI",
-
+    "Oracle Cloud Infra 2025 AI Foundations Associate · DeepLearning.AI: Building AI Voice Agents · Google Cloud: Intro to Generative AI. He collects certifications the way normal people collect Netflix subscriptions.",
   "oracle":
-    "Adarsh holds the **Oracle Cloud Infrastructure 2025 AI Foundations Associate** certification.",
-
+    "Oracle Cloud Infrastructure 2025 AI Foundations Associate. Yes he actually studied for it.",
   "cgpa":
-    "Adarsh's current CGPA is **7.54** at JSS Institute of Information Technology (B.Tech IT, 2022–2027).",
-
+    "Current CGPA: **7.56**. Not a 9-point-something flex, but the GitHub commit graph tells a different story about where the effort actually went.",
   "education":
-    "B.Tech in Information Technology from JSS Institute of Information Technology (2022–2027). CGPA: 7.54.",
+    "B.Tech IT, JSS Academy of Technical Education (2023–2027). CGPA 7.56 — proof that grades and actual engineering ability have a weak correlation coefficient.",
+
+  "interests":
+    "High-throughput web apps, distributed systems infra, and AI integration pipelines. Basically: making things fast, making things scale, and making AI actually useful instead of just a chatbot wrapper. (Yes, the irony of this being a chatbot is not lost on him.)",
 };
 
 const DEFAULT_RESPONSE =
-  "I'm Adarsh's pre-trained assistant 🤖. Try asking about **OckhamGrid**, **Vyzrox**, **Q-Ecosystem**, **PawAlert**, **LeetCode**, **Skills**, or if he's available to **Hire**!";
-
+  ("Sorry i'm giving u this default response cus Adarsh is lazy to fill this 😞 ask him to train his ai more . . . ") +  "I'm Adarsh's very opinionated, and slightly arrogant AI assistant 🤖 pls DOnt Mind if I am blunt but i m not trying to be mean ukw we can be a good company. Ask me about **Auroth**, **Isolyth**, **Multi-Agent Orchestrator**, **OckhamGrid**, **Vyzrox**, **Q-Ecosystem**, **PawAlert**, his **LeetCode** rank, his **skills**, **SORRY SORRY SORRY** 😞 i talk too much srsly.. just ask if he's available to **hire**. Spoiler: **HE IS**. wanna meet him ?  send him a google meet link. jk 😜 **NO** u send him meet link :)";
 // ── Keyword matcher ───────────────────────────────────────────────────────────
 function getResponse(query: string): string {
   const q = query.toLowerCase();
@@ -134,7 +157,15 @@ function TypingDots() {
 
 // ── Suggestion pills ──────────────────────────────────────────────────────────
 const PILLS = [
+  "Who is Adarsh?",
+  "why are you here ?",
+  "Do you know his password?",
+  "Is he a developer?",
   "Tell me about OG",
+  "Tell me about Auroth",
+  "Tell me about Isolyth",
+  "Tell me about Multi-Agent Orchestrator",
+
   "Tell me about Vyzrox",
   "Tell me about Q-Ecosystem",
   "LeetCode Stats",
@@ -142,6 +173,25 @@ const PILLS = [
   "PawAlert Project",
   "Skills & Stack",
   "GitHub Activity",
+  "CGPA",
+  "Education",
+  "Certifications",
+  "Experience",
+  "GDSC",
+  "Interests",
+  "LinkedIn",
+  "Instagram",
+  "Twitter",
+  "Contact",
+  "Email",
+  "Phone",  
+
+  
+
+  
+
+  
+
 ];
 
 // ── Widget ────────────────────────────────────────────────────────────────────
@@ -153,7 +203,7 @@ export function AdarshAIWidget() {
     {
       id: "primer",
       role: "assistant",
-      text: "Hi! I'm Adarsh's AI assistant 👋 Ask me anything about his experience, projects, or skills — I'm pre-trained on his resume.",
+      text: "I'm Adarsh's very opinionated, and slightly arrogant AI assistant 🤖 pls DOnt Mind if I am blunt but i m not trying to be mean ukw we can be a good company. Ask me about **Auroth**, **Isolyth**, **Multi-Agent Orchestrator**, **OckhamGrid**, **Vyzrox**, **Q-Ecosystem**, **PawAlert**, his **LeetCode** rank, his **skills**, **SORRY SORRY SORRY** 😞 i talk too much srsly.. just ask if he's available to **hire**. Spoiler: **HE IS**. wanna meet him ?  send him a google meet link. jk 😜 **NO** u send him meet link :)",
     },
   ]);
 
@@ -232,7 +282,7 @@ export function AdarshAIWidget() {
                 <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-400 border border-black" />
               </div>
               <div>
-                <p className="text-sm font-black text-white font-mono">Adarsh AI</p>
+                <p className="text-sm font-black text-white font-mono">Adarsh's AI</p>
                 <p className="text-[9px] text-neutral-500 font-mono uppercase tracking-[0.2em]">
                   Static · Always Online ✓
                 </p>
@@ -284,7 +334,7 @@ export function AdarshAIWidget() {
                     </div>
                   </div>
                   <p className="text-[10px] text-green-400 font-mono pl-1 animate-pulse">
-                    Adarsh AI is typing…
+                    Adarsh's AI is typing…… 
                   </p>
                 </motion.div>
               )}

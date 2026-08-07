@@ -21,6 +21,7 @@ import { InternshipDashboard } from "@/components/sections/InternshipDashboard";
 import { SkillsSphere } from "@/components/sections/SkillsSphere";
 import { LeetCodeHeatmap } from "@/components/ui/LeetCodeHeatmap";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
+import { ProjectsOutro } from "@/components/sections/ProjectsOutro";
 import { ExperienceTimeline } from "@/components/sections/ExperienceTimeline";
 import { ContactFooter } from "@/components/sections/ContactFooter";
 
@@ -116,6 +117,7 @@ export default function Home() {
           <SkillsSphere />
           <LeetCodeHeatmap />
           <ProjectsSection />
+          <ProjectsOutro />
           <ExperienceTimeline />
           <ContactFooter />
         </div>
