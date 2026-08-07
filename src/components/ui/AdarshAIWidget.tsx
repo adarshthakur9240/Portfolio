@@ -282,7 +282,7 @@ export function AdarshAIWidget() {
                 <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-400 border border-black" />
               </div>
               <div>
-                <p className="text-sm font-black text-white font-mono">Adarsh's AI</p>
+                <p className="text-sm font-black text-white font-mono">Adarsh&apos;s AI</p>
                 <p className="text-[9px] text-neutral-500 font-mono uppercase tracking-[0.2em]">
                   Static · Always Online ✓
                 </p>
@@ -334,7 +334,7 @@ export function AdarshAIWidget() {
                     </div>
                   </div>
                   <p className="text-[10px] text-green-400 font-mono pl-1 animate-pulse">
-                    Adarsh's AI is typing…… 
+                    Adarsh&apos;s AI is typing…… 
                   </p>
                 </motion.div>
               )}
