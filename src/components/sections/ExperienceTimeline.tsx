@@ -3,46 +3,81 @@
 import { useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ScrollStack, { ScrollStackItem } from "@/components/ScrollStack";
 
 // ═══════════════════════════════════════════════════════════════════
-// CERTIFICATIONS DATA
+// CERTIFICATIONS DATA — full list
 // ═══════════════════════════════════════════════════════════════════
 const CERTS = [
   {
-    title: "Oracle Cloud Infrastructure 2025 AI Foundations Associate",
-    tag: "CLOUD · AI",
+    title: "Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate",
+    tag: "ORACLE · CLOUD · AI",
     year: "2025",
   },
   {
-    title: "DeepLearning.AI: Building AI Voice Agents",
-    tag: "DEEP LEARNING · VOICE",
-    year: "2024",
+    title: "AI for You: Training and Assessment",
+    tag: "ORACLE · AI",
+    year: "2025",
   },
   {
-    title: "Google Cloud: Intro to Generative AI",
-    tag: "GCP · GENERATIVE AI",
+    title: "Building AI Voice Agents for Production",
+    tag: "DEEPLEARNING.AI · VOICE",
+    year: "2025",
+  },
+  {
+    title: "Introduction to Large Language Models",
+    tag: "GOOGLE CLOUD · LLM",
+    year: "2025",
+  },
+  {
+    title: "Introduction to Generative AI",
+    tag: "GOOGLE · GENERATIVE AI",
+    year: "2025",
+  },
+  {
+    title: "Program Financial Planning with ClickUp",
+    tag: "COURSERA · PROGRAM MGMT",
+    year: "2025",
+  },
+  {
+    title: "Generative AI with AWS",
+    tag: "ANALYTICS VIDHYA · AWS",
+    year: "2025",
+  },
+  {
+    title: "Building Data Analyst AI Agent",
+    tag: "ANALYTICS VIDHYA · DATA",
+    year: "2025",
+  },
+  {
+    title: "Foundations of Data Science",
+    tag: "ANALYTICS VIDHYA · DATA SCIENCE",
+    year: "2025",
+  },
+  {
+    title: "HTML, CSS, and JavaScript for Web Developers",
+    tag: "JOHNS HOPKINS UNIVERSITY · WEB",
     year: "2024",
   },
 ];
 
 // ═══════════════════════════════════════════════════════════════════
-// FLOATING CERT CARD — with mouse-following radial glow border
+// CERT CARD CONTENT — reused inside each ScrollStackItem
 // ═══════════════════════════════════════════════════════════════════
-function CertCard({
+function CertCardContent({
   cert,
   index,
 }: {
   cert: (typeof CERTS)[number];
   index: number;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
 
-  // Mouse-following glow border effect
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!cardRef.current || !glowRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
+      const target = e.currentTarget;
+      if (!glowRef.current) return;
+      const rect = target.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
@@ -63,71 +98,41 @@ function CertCard({
 
   return (
     <div
-      ref={cardRef}
       data-cert-index={index}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="cert-card relative w-full max-w-2xl mx-auto cursor-default group"
-      style={{
-        perspective: "1000px",
-        transformStyle: "preserve-3d",
-      }}
+      className="relative w-full h-full bg-[#050505] border border-white/10 hover:border-white/25 transition-colors duration-500 p-8 md:p-10 overflow-hidden"
     >
-      {/* Card body */}
+      {/* Mouse-following glow overlay */}
       <div
-        className="relative bg-white/[0.015] border border-white/5 group-hover:border-white/20 transition-all duration-500 p-8 md:p-12 rounded-none overflow-hidden"
-        style={{
-          transform: "rotateX(2deg) rotateY(0deg)",
-          transition: "transform 0.4s ease",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget.style.transform =
-            index % 2 === 0
-              ? "rotateX(-2deg) rotateY(3deg)"
-              : "rotateX(-2deg) rotateY(-3deg)");
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "rotateX(2deg) rotateY(0deg)";
-        }}
-      >
-        {/* Mouse-following glow overlay */}
-        <div
-          ref={glowRef}
-          className="absolute inset-0 pointer-events-none z-0 transition-opacity duration-300"
-        />
+        ref={glowRef}
+        className="absolute inset-0 pointer-events-none z-0 transition-opacity duration-300"
+      />
 
-        {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-12 h-[1px] bg-white/15 group-hover:bg-white/40 transition-colors duration-500" />
-        <div className="absolute top-0 left-0 w-[1px] h-12 bg-white/15 group-hover:bg-white/40 transition-colors duration-500" />
-        <div className="absolute bottom-0 right-0 w-12 h-[1px] bg-white/15 group-hover:bg-white/40 transition-colors duration-500" />
-        <div className="absolute bottom-0 right-0 w-[1px] h-12 bg-white/15 group-hover:bg-white/40 transition-colors duration-500" />
+      {/* Corner accents */}
+      <div className="absolute top-0 left-0 w-10 h-[1px] bg-white/15" />
+      <div className="absolute top-0 left-0 w-[1px] h-10 bg-white/15" />
+      <div className="absolute bottom-0 right-0 w-10 h-[1px] bg-white/15" />
+      <div className="absolute bottom-0 right-0 w-[1px] h-10 bg-white/15" />
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="flex-1">
-            {/* Tag */}
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600 block mb-3">
-              {cert.tag}
-            </span>
-
-            {/* Title */}
-            <h4 className="text-2xl md:text-3xl font-black leading-tight uppercase tracking-tight text-neutral-300 group-hover:text-white transition-colors duration-300">
-              {cert.title}
-            </h4>
-          </div>
-
-          {/* Year badge */}
-          <div className="flex-shrink-0">
-            <div className="w-20 h-20 border border-white/10 group-hover:border-white/30 rounded-none flex items-center justify-center transition-all duration-500 group-hover:bg-white/[0.03]">
-              <span className="text-2xl font-black text-neutral-500 group-hover:text-white transition-colors duration-300">
-                {cert.year}
-              </span>
-            </div>
-          </div>
+      {/* Content */}
+      <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 h-full">
+        <div className="flex-1">
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600 block mb-3">
+            {cert.tag}
+          </span>
+          <h4 className="text-xl md:text-2xl font-black leading-tight uppercase tracking-tight text-neutral-200">
+            {cert.title}
+          </h4>
         </div>
 
-        {/* Bottom glow line */}
-        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-neutral-800 group-hover:bg-white/30 transition-colors duration-500" />
+        <div className="flex-shrink-0">
+          <div className="w-16 h-16 border border-white/10 flex items-center justify-center">
+            <span className="text-lg font-black text-neutral-500">
+              {cert.year}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -145,7 +150,6 @@ export function ExperienceTimeline() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // ── Section heading letter stagger ──
       if (headingRef.current) {
         const raw = headingRef.current.innerText;
         headingRef.current.innerHTML = raw
@@ -172,7 +176,6 @@ export function ExperienceTimeline() {
         });
       }
 
-      // ── GDSC card slides in from left ──
       if (gdscRef.current) {
         gsap.from(gdscRef.current, {
           x: -100,
@@ -186,26 +189,6 @@ export function ExperienceTimeline() {
           },
         });
       }
-
-      // ── Cert cards: alternating slide-in from left/right ──
-      const certCards = document.querySelectorAll(".cert-card");
-      certCards.forEach((card, i) => {
-        const fromLeft = i % 2 === 0;
-
-        gsap.from(card, {
-          x: fromLeft ? -150 : 150,
-          y: 60,
-          opacity: 0,
-          rotateY: fromLeft ? -8 : 8,
-          duration: 1.1,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 88%",
-            once: true,
-          },
-        });
-      });
     }, sectionRef);
 
     return () => ctx.revert();
@@ -247,22 +230,36 @@ export function ExperienceTimeline() {
           </div>
         </div>
 
-        {/* ── Certifications Vault ── */}
-        <div className="mb-12">
+        {/* ── Certifications Vault — Scroll Stack ── */}
+        <div className="mb-4">
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600 block mb-2 text-center">
-            [ THE VAULT ]
+            [ THE VAULT — {CERTS.length} CERTIFICATIONS ]
           </span>
-          <h3 className="text-3xl md:text-5xl font-black mb-16 text-center text-neutral-500 uppercase tracking-tighter">
+          <h3 className="text-3xl md:text-5xl font-black mb-4 text-center text-neutral-500 uppercase tracking-tighter">
             CERTIFICATIONS
           </h3>
         </div>
 
-        {/* ── Floating 3D Cert Cards ── */}
-        <div className="flex flex-col gap-8">
+        <ScrollStack
+          useWindowScroll
+          itemDistance={80}
+          itemScale={0.025}
+          itemStackDistance={24}
+          stackPosition="18%"
+          scaleEndPosition="8%"
+          baseScale={0.88}
+          rotationAmount={0.5}
+          blurAmount={0.6}
+        >
           {CERTS.map((cert, i) => (
-            <CertCard key={cert.title} cert={cert} index={i} />
+            <ScrollStackItem
+              key={cert.title}
+              itemClassName="!h-[220px] !p-0 !rounded-none !shadow-none !bg-transparent"
+            >
+              <CertCardContent cert={cert} index={i} />
+            </ScrollStackItem>
           ))}
-        </div>
+        </ScrollStack>
       </div>
     </section>
   );

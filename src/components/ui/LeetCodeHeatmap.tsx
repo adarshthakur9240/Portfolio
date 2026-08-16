@@ -191,12 +191,12 @@ export function LeetCodeHeatmap() {
   const gh2Ref     = useRef<HTMLHeadingElement>(null);
 
   // Resume-accurate stats
-  const LC_TOTAL_SOLVED = 650;
+  const LC_TOTAL_SOLVED = 700;
   const LC_PEAK_RATING  = 1862;
-  const LC_TOTAL_VIEWS  = 9000;
+  const LC_TOTAL_VIEWS  = 20000;
 
   // GitHub architect stats
-  const GH_COMMITS  = 600;
+  const GH_COMMITS  = 700;
   const GH_PRS      = 212;
   const GH_REPOS    = 35;
   const GH_VIEWS    = 2000;
