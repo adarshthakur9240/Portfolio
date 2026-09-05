@@ -444,32 +444,56 @@ Best regards,
               className="flex flex-wrap justify-center items-center gap-5"
             >
               <MagneticPull strength={0.3}>
+                {/* DOWNLOAD RÉSUMÉ — top-right corner clipped, Black Ops One, scanline hover */}
                 <a
                   href="/Adarsh_Singh_Software_Engineer_2027.pdf"
                   download
                   onClick={playWhoosh}
                   onMouseEnter={playHover}
-                  className="hero-cta-btn group inline-flex items-center gap-3 px-10 py-5 border-2 border-white/20 text-white rounded-none font-black uppercase tracking-[0.2em] text-sm relative overflow-hidden bg-transparent hover:bg-white hover:text-black hover:border-white transition-all duration-[0ms]"
+                  className={`hero-cta-btn group inline-flex items-center gap-3 px-10 py-5 border-2 border-white/20 text-white rounded-none uppercase tracking-[0.2em] text-sm relative overflow-hidden bg-transparent transition-colors duration-[0ms] ${blackOpsOne.className}`}
+                  style={{
+                    clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%)",
+                  }}
                 >
-                  <span className="relative z-10">Download Résumé</span>
-                  <FiDownload className="relative z-10 text-xl group-hover:translate-y-0.5 transition-transform" />
+                  {/* Scanline hover fill */}
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                    style={{
+                      background:
+                        "repeating-linear-gradient(-45deg, #FAFAFA 0px, #FAFAFA 1px, transparent 1px, transparent 6px)",
+                    }}
+                  />
+                  <span aria-hidden className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none bg-white/85" />
+                  <span className="relative z-10 group-hover:text-black transition-colors duration-150">Download Résumé</span>
+                  <FiDownload className="relative z-10 text-xl group-hover:translate-y-0.5 group-hover:text-black transition-all duration-150" />
                 </a>
               </MagneticPull>
 
+              {/* HIRE ME — bottom-left corner clipped, Black Ops One, scanline hover */}
               <motion.a
                 href={mailtoHref}
                 target="_self"
-                className="relative flex items-center justify-center w-[200px] h-[55px] border border-white/50 text-white font-bold tracking-[0.2em] text-sm overflow-hidden group"
-                whileHover={{ scale: 1.05 }}
+                className={`relative flex items-center justify-center px-8 py-4 border-2 border-white/20 text-white tracking-[0.2em] text-sm overflow-hidden group ${blackOpsOne.className}`}
+                style={{
+                  clipPath: "polygon(0 0, 100% 0, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
+                }}
+                whileHover={{ scale: 1.05, boxShadow: "6px 6px 0px 0px #FAFAFA" }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
-                {/* Hover Background Fill */}
-                <span className="absolute inset-0 w-full h-full bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out z-0"></span>
-                
-                {/* Text */}
-                <span className="relative z-10 group-hover:text-black transition-colors duration-300 flex items-center gap-3">
-                  HIRE ME 
+                {/* Scanline hover fill */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                  style={{
+                    background:
+                      "repeating-linear-gradient(-45deg, #FAFAFA 0px, #FAFAFA 1px, transparent 1px, transparent 6px)",
+                  }}
+                />
+                <span aria-hidden className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none bg-white/85" />
+                <span className="relative z-10 group-hover:text-black transition-colors duration-150 flex items-center gap-3">
+                  HIRE ME
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
