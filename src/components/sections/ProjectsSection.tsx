@@ -18,12 +18,44 @@ interface Project {
   description: string;
   image: string;
   link: string;
+  repoLink?: string;
   techStack: string;
   systemCheck: string;
   telemetry: TelemetryLine[];
 }
 
 const PROJECTS: Project[] = [
+  {
+    title: "SentinelPay",
+    subtitle: "Real-Time Fraud Detection Engine",
+    description:
+      "A production-grade fraud detection system built for the Razorpay Buildathon — combines an XGBoost risk model (PR-AUC optimized) with real-time Kafka streaming velocity features, NetworkX/PageRank-based fraud-ring detection on linkage data, and SHAP-based chargeback evidence generation for explainability.",
+    image: "/projects/SentinelPay.png",
+    link: "https://sentinelpay-seven.vercel.app/",
+    repoLink: "https://github.com/adarshthakur9240/sentinelpay",
+    techStack: "XGBoost / Kafka / NetworkX / SHAP / FastAPI / Next.js",
+    systemCheck: "SYS_INIT // FRAUD ENGINE ONLINE",
+    telemetry: [
+      { label: "Primary Metric", value: "PR-AUC" },
+      { label: "Streaming Layer", value: "Kafka + Velocity Engine" },
+      { label: "Ring Detection", value: "NetworkX + PageRank" },
+    ],
+  },
+  {
+    title: "ForgeML",
+    subtitle: "Autonomous Software Engine",
+    description:
+      "[PLACEHOLDER — Adarsh to confirm exact description from ForgeML_MasterBlueprint.md — autonomous multi-agent system that plans, codes, and ships software with minimal human intervention.]",
+    image: "/projects/ForgeML.png",
+    link: "https://frontend-seven-wine-65.vercel.app/",
+    repoLink: "https://github.com/adarshthakur9240/forgeml",
+    techStack: "[PLACEHOLDER — confirm exact stack]",
+    systemCheck: "SYS_INIT // AUTONOMOUS ENGINE V1.0",
+    telemetry: [
+      { label: "[PLACEHOLDER]", value: "[PLACEHOLDER]" },
+      { label: "[PLACEHOLDER]", value: "[PLACEHOLDER]" },
+    ],
+  },
   {
     title: "Auroth",
     subtitle: "Autonomous Multi-Agent GitHub Issue Resolver",
@@ -321,7 +353,7 @@ export function ProjectsSection() {
                     </div>
                   </div>
 
-                  <div className="pointer-events-auto mt-4 inline-block">
+                  <div className="pointer-events-auto mt-4 flex flex-wrap items-center gap-5">
                     <a
                       href={project.link}
                       target="_blank"
@@ -332,6 +364,17 @@ export function ProjectsSection() {
                     >
                       LAUNCH PROTOTYPE ↗
                     </a>
+                    {project.repoLink && (
+                      <a
+                        href={project.repoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onMouseEnter={playHover}
+                        className="inline-flex items-center gap-2 text-xs font-mono tracking-[0.2em] text-neutral-500 border-b border-neutral-500/25 hover:text-[#FAFAFA] hover:border-[#FAFAFA]/50 transition-colors pb-1 interactive"
+                      >
+                        VIEW SOURCE REPO ↗
+                      </a>
+                    )}
                   </div>
                 </div>
 
