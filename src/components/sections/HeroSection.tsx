@@ -243,7 +243,7 @@ Best regards,
   }, [mouseX, mouseY]);
 
   // ── Bug-1 fix: run AFTER isLoaded so contentRef is in the DOM ────────────
-  // ── Bug-2 fix: no gsap.registerPlugin here (SmoothScrollProvider owns it) ─
+  // ── SmoothScrollProvider owns gsap.registerPlugin — don't duplicate it ──────
   useEffect(() => {
     if (!isLoaded) return;                    // wait until content renders
     if (scrollTriggerSetupRef.current) return; // only set up once
@@ -273,7 +273,15 @@ Best regards,
       ease: "none",
     });
 
+    // Refresh so ScrollTrigger recalculates trigger positions now that the
+    // preloader is gone and Hero content is fully painted in the DOM.
+    // Deferred one frame to avoid measuring before layout is complete.
+    const refreshId = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 50);
+
     return () => {
+      clearTimeout(refreshId);
       tl.scrollTrigger?.kill();
       tl.kill();
       scrollTriggerSetupRef.current = false;

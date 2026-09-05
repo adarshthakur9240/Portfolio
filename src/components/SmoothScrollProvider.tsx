@@ -48,32 +48,55 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
-    // ── 3. Sync Lenis → ScrollTrigger + write scroll progress ────────────────
-    //   We grab setScrollProgress via getState() so the closure never goes stale.
+    // ── 3. CRITICAL: tell ScrollTrigger to read scroll position from Lenis ───
+    //   Without this, ScrollTrigger listens to native window scroll while Lenis
+    //   intercepts it — the two systems never agree on position and scrub
+    //   never fires. scrollerProxy bridges them.
+    ScrollTrigger.scrollerProxy(document.body, {
+      scrollTop(value) {
+        if (arguments.length) {
+          lenis.scrollTo(value as number, { immediate: true });
+        }
+        return lenis.scroll;
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      },
+    });
+
+    // ── 4. Sync Lenis → ScrollTrigger + write scroll progress ────────────────
+    //   On every Lenis scroll tick: push position to ScrollTrigger so scrub
+    //   animations update, and write normalised progress to Zustand store
+    //   (read by CameraDrift in useFrame — zero React re-renders).
     lenis.on("scroll", (e: { progress: number }) => {
       ScrollTrigger.update();
       useHUDStore.getState().setScrollProgress(e.progress ?? 0);
     });
 
-    // ── 4. GSAP ticker drives the Lenis RAF loop ──────────────────────────────
-    //   This replaces requestAnimationFrame so GSAP and Lenis share the same
-    //   animation frame, preventing jitter / double-frames.
+    // ── 5. GSAP ticker drives the Lenis RAF loop ──────────────────────────────
     const rafHandler = (time: number) => {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(rafHandler);
     gsap.ticker.lagSmoothing(0);
 
-    // ── 5. Section tracking via IntersectionObserver ──────────────────────────
-    //   Watches all sections that carry a [data-section] attribute and updates
-    //   the Zustand store when they cross 30 % of the viewport.
+    // ── 6. Refresh ScrollTrigger after DOM settles ────────────────────────────
+    //   Deferred one frame so any late-mounting sections (post-preloader) are
+    //   measured correctly. Without this, trigger start/end positions are stale.
+    const refreshId = setTimeout(() => ScrollTrigger.refresh(), 100);
+
+    // ── 7. Section tracking via IntersectionObserver ──────────────────────────
     const sectionEls = Array.from(
       document.querySelectorAll<HTMLElement>("[data-section]")
     );
 
     const io = new IntersectionObserver(
       (entries) => {
-        // Find the most-visible intersecting section
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
@@ -91,6 +114,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 
     // ── Cleanup ───────────────────────────────────────────────────────────────
     return () => {
+      clearTimeout(refreshId);
       lenis.destroy();
       gsap.ticker.remove(rafHandler);
       // NOTE: do NOT call ScrollTrigger.getAll().kill() here — each component
