@@ -196,10 +196,10 @@ export function LeetCodeHeatmap() {
   const LC_TOTAL_VIEWS  = 20000;
 
   // GitHub architect stats
-  const GH_COMMITS  = 700;
+  const GH_COMMITS  = 1000;
   const GH_PRS      = 212;
-  const GH_REPOS    = 35;
-  const GH_VIEWS    = 2000;
+  const GH_REPOS    = 45;
+  const GH_VIEWS    = 5000;
 
   useEffect(() => {
     playDataScan();
