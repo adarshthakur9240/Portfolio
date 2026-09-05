@@ -43,17 +43,18 @@ const PROJECTS: Project[] = [
   },
   {
     title: "ForgeML",
-    subtitle: "Autonomous Software Engine",
+    subtitle: "End-to-End Applied NLP System",
     description:
-      "[PLACEHOLDER — Adarsh to confirm exact description from ForgeML_MasterBlueprint.md — autonomous multi-agent system that plans, codes, and ships software with minimal human intervention.]",
+      "High-precision sentiment analysis pipeline fine-tuned on 25,000 IMDB reviews with DistilBERT (256-token context), evaluated against a classical TF-IDF baseline (+2.10 pp accuracy), and deployed via an async FastAPI inference server featuring dynamic tensor batching for a 5.9x speedup.",
     image: "/projects/ForgeML.png",
     link: "https://frontend-seven-wine-65.vercel.app/",
     repoLink: "https://github.com/adarshthakur9240/forgeml",
-    techStack: "[PLACEHOLDER — confirm exact stack]",
-    systemCheck: "SYS_INIT // AUTONOMOUS ENGINE V1.0",
+    techStack: "PyTorch / DistilBERT / HuggingFace / FastAPI / Next.js / W&B",
+    systemCheck: "SYS_INIT // NLP INFERENCE ENGINE ONLINE",
     telemetry: [
-      { label: "[PLACEHOLDER]", value: "[PLACEHOLDER]" },
-      { label: "[PLACEHOLDER]", value: "[PLACEHOLDER]" },
+      { label: "Test Accuracy", value: "91.30% (+2.10 pp)" },
+      { label: "Batch Speedup", value: "5.9x (B=32 @ 1.7ms)" },
+      { label: "Inference Latency", value: "15.0ms (MPS)" },
     ],
   },
   {
