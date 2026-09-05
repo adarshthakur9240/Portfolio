@@ -48,9 +48,12 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
-    // ── 3. Sync Lenis → ScrollTrigger ────────────────────────────────────────
-    //   Every time Lenis ticks it tells ScrollTrigger to recalculate its state.
-    lenis.on("scroll", ScrollTrigger.update);
+    // ── 3. Sync Lenis → ScrollTrigger + write scroll progress ────────────────
+    //   We grab setScrollProgress via getState() so the closure never goes stale.
+    lenis.on("scroll", (e: { progress: number }) => {
+      ScrollTrigger.update();
+      useHUDStore.getState().setScrollProgress(e.progress ?? 0);
+    });
 
     // ── 4. GSAP ticker drives the Lenis RAF loop ──────────────────────────────
     //   This replaces requestAnimationFrame so GSAP and Lenis share the same

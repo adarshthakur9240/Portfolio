@@ -13,6 +13,8 @@ import { MagneticPull } from "@/components/ui/MagneticPull";
 import { FiDownload } from "react-icons/fi";
 import RotatingText from "@/components/RotatingText";
 import { Vampiro_One, Black_Ops_One } from "next/font/google";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const vampiroOne = Vampiro_One({ weight: "400", subsets: ["latin"], display: "swap" });
 const blackOpsOne = Black_Ops_One({ weight: "400", subsets: ["latin"], display: "swap" });
@@ -180,6 +182,7 @@ Best regards,
 
   const sectionRef = useRef<HTMLElement>(null);
   const maskLayerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -235,6 +238,42 @@ Best regards,
     return () => window.removeEventListener("mousemove", handler);
   }, [mouseX, mouseY]);
 
+  // Scroll-out: Hero content fades + scales down as section exits viewport.
+  // Desktop only + respects prefers-reduced-motion.
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    if (!section || !content) return;
+
+    const mobile = window.innerWidth <= 768;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (mobile) return; // leave mobile untouched
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.6,      // slight lag for weighted feel
+      },
+    });
+
+    tl.to(content, {
+      opacity: 0,
+      // Scale is a depth cue; skip it for reduced-motion users
+      ...(reducedMotion ? {} : { scale: 0.92 }),
+      ease: "none",
+    });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const nameChars = HERO_NAME.split("");
 
   return (
@@ -256,6 +295,7 @@ Best regards,
       <AnimatePresence>
         {isLoaded && (
           <motion.div
+            ref={contentRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
