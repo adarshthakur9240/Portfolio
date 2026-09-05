@@ -5,7 +5,6 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
-  AnimatePresence,
 } from "framer-motion";
 import { useEffect, useRef, useState, useMemo, Suspense } from "react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
@@ -319,8 +318,7 @@ Best regards,
       )}
 
       {/* ── Content Layer ── */}
-      <AnimatePresence>
-        {isLoaded && (
+      {isLoaded && (
           // Plain wrapper — GSAP owns opacity/scale here; no Framer Motion props
           // so the scrub never conflicts with Framer's entrance animation below.
           // No overflow:hidden so scale(0.92) isn't clipped.
@@ -577,7 +575,6 @@ Best regards,
           </motion.div>
           </div>
         )}
-      </AnimatePresence>
     </section>
   );
 }

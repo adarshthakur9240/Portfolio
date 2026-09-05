@@ -1,7 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import gsap from "gsap";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import VariableProximity from "@/components/VariableProximity";
 
 // ═══════════════════════════════════════════════════════════════════
@@ -148,12 +151,54 @@ export function AboutSection() {
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
   const gridInView = useInView(gridRef, { once: true, margin: "-80px" });
 
+  // ── GSAP scroll-exit: fade + scale as About scrolls out ────────────────────
+  // STRICT RULE: this ref targets a plain <div> with NO Framer Motion props.
+  // The inner motion.* elements (heading, grid cards) are untouched.
+  // Mobile: effect disabled entirely (matches Hero behaviour).
+  // prefers-reduced-motion: scale skipped, opacity still fades (not motion).
+  const aboutExitRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = containerRef.current;
+    const wrapper = aboutExitRef.current;
+    if (!section || !wrapper) return;
+
+    const mobile = window.innerWidth <= 768;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (mobile) return; // no scroll-fade on mobile — matches Hero guard
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.6,
+      },
+    });
+
+    tl.to(wrapper, {
+      opacity: 0,
+      // Scale skipped under prefers-reduced-motion — matches Hero guard
+      ...(reducedMotion ? {} : { scale: 0.95, transformOrigin: "center center" }),
+      ease: "none",
+    });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section
       ref={containerRef}
       id="about"
       className="relative py-24 md:py-32 px-4 md:px-12 lg:px-20 z-10 overflow-hidden bg-[#050505]"
     >
+      {/* Plain GSAP wrapper — scrubs opacity/scale on scroll-out.
+          NO Framer Motion props here. Inner motion.* elements are untouched. */}
+      <div ref={aboutExitRef} style={{ willChange: "opacity, transform" }}>
       <div className="max-w-6xl mx-auto">
         {/* ── Section Header ── */}
         <motion.div
@@ -270,7 +315,8 @@ export function AboutSection() {
             <TechMarquee />
           </motion.div>
         </motion.div>
-      </div>
+      </div> {/* max-w-6xl */}
+      </div> {/* aboutExitRef GSAP wrapper */}
     </section>
   );
 }
