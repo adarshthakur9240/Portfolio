@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
 import { useCyberSounds } from "@/hooks/useCyberSounds";
+import { MusicPlayer } from "@/components/ui/MusicPlayer";
 
 const NAV_LINKS = [
   { name: "About", href: "#about" },
@@ -24,7 +24,7 @@ Best regards,
 [Recruiter Name]`);
   const mailtoHref = `mailto:singhadadarsh9240@gmail.com?subject=${mailSubject}&body=${mailBody}`;
 
-  const { playHover, playWhoosh, soundEnabled, toggleSound } = useCyberSounds();
+  const { playHover, playWhoosh } = useCyberSounds();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -71,46 +71,8 @@ Best regards,
 
         {/* Right actions */}
         <div className="flex items-center gap-3">
-          {/* Sound Toggle (Monochromatic) */}
-          <button
-            id="sound-toggle"
-            onClick={toggleSound}
-            title={soundEnabled ? "Sound ON — click to mute BGM" : "Sound OFF — click to enable BGM"}
-            className="relative w-9 h-9 flex items-center justify-center rounded-md border border-white/10 hover:border-white/30 transition-colors duration-200 interactive"
-          >
-            <AnimatePresence mode="wait">
-              {soundEnabled ? (
-                <motion.span
-                  key="vol-on"
-                  initial={{ scale: 0, rotate: -20 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  exit={{ scale: 0, rotate: 20 }}
-                  transition={{ duration: 0.18, ease: "backOut" }}
-                >
-                  <Volume2 className="w-4 h-4 text-white" />
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="vol-off"
-                  initial={{ scale: 0, rotate: 20 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  exit={{ scale: 0, rotate: -20 }}
-                  transition={{ duration: 0.18, ease: "backOut" }}
-                >
-                  <VolumeX className="w-4 h-4 text-neutral-500" />
-                </motion.span>
-              )}
-            </AnimatePresence>
-
-            {/* Subtle white pulse ring when sound is ON */}
-            {soundEnabled && (
-              <motion.span
-                className="absolute inset-0 rounded-md border border-white/30"
-                animate={{ scale: [1, 1.35], opacity: [0.4, 0] }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-              />
-            )}
-          </button>
+          {/* Music Player Widget */}
+          <MusicPlayer />
 
           {/* Hire Me (Monochromatic) */}
           <div className="relative group">
