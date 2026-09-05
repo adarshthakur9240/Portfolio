@@ -66,7 +66,6 @@ export function MusicPlayer() {
     isPlaying,
     volume,
     isMuted,
-    setCurrentTrack,
     setIsPlaying,
     setVolume,
     toggleMute,

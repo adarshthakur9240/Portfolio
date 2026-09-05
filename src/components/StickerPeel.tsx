@@ -144,6 +144,7 @@ const StickerPeel: React.FC<StickerPeelProps> = ({
         draggableInstanceRef.current.kill();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
