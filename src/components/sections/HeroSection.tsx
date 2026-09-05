@@ -12,6 +12,10 @@ import { useCyberSounds } from "@/hooks/useCyberSounds";
 import { MagneticPull } from "@/components/ui/MagneticPull";
 import { FiDownload } from "react-icons/fi";
 import RotatingText from "@/components/RotatingText";
+import { Vampiro_One, Black_Ops_One } from "next/font/google";
+
+const vampiroOne = Vampiro_One({ weight: "400", subsets: ["latin"], display: "swap" });
+const blackOpsOne = Black_Ops_One({ weight: "400", subsets: ["latin"], display: "swap" });
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
@@ -270,8 +274,7 @@ Best regards,
                 initial="hidden"
                 animate="visible"
                 aria-label={HERO_NAME}
-                className="text-[12vw] md:text-[12vw] font-black tracking-tighter leading-[0.85] text-neutral-800 text-center uppercase"
-                style={{ fontFamily: "'Outfit', sans-serif" }}
+                className={`text-[12vw] md:text-[12vw] font-black tracking-tighter leading-[0.85] text-neutral-800 text-center uppercase ${vampiroOne.className}`}
               >
                 {nameChars.map((char, i) => (
                   <motion.span
@@ -296,8 +299,7 @@ Best regards,
                 style={{ WebkitMaskImage: "none" }}
               >
                 <h1
-                  className="text-[12vw] md:text-[12vw] font-black tracking-tighter leading-[0.85] text-white text-center uppercase"
-                  style={{ fontFamily: "'Outfit', sans-serif" }}
+                  className={`text-[12vw] md:text-[12vw] font-black tracking-tighter leading-[0.85] text-white text-center uppercase ${vampiroOne.className}`}
                 >
                   {nameChars.map((char, i) => (
                     <span
@@ -354,36 +356,82 @@ Best regards,
               transition={{ delay: 0.8, duration: 0.6 }}
               className="flex flex-wrap justify-center gap-4 mb-12"
             >
-              {BADGES.map((b, i) => (
-                <motion.div
-                  key={b.label}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 0.9 + i * 0.12,
-                    type: "spring",
-                    stiffness: 130,
-                    damping: 16,
-                  }}
-                  whileHover={{
-                    scale: 1.12,
-                    backgroundColor: "#FAFAFA",
-                    color: "#050505",
-                    boxShadow: "8px 8px 0px 0px #FAFAFA",
-                    transition: { duration: 0.15 },
-                  }}
-                  onMouseEnter={playHover}
-                  className="px-6 py-3 rounded-none bg-white/[0.02] border-2 border-white/10 cursor-default group"
-                  style={{ color: "#FAFAFA" }}
-                >
-                  <span className="text-xs font-black uppercase tracking-[0.15em] group-hover:text-black transition-colors duration-150">
-                    {b.label}
-                  </span>
-                  <span className="text-[10px] text-neutral-500 group-hover:text-neutral-700 ml-2 transition-colors duration-150">
-                    / {b.meta}
-                  </span>
-                </motion.div>
-              ))}
+              {BADGES.map((b, i) => {
+                /* ── Per-badge shape config ── */
+                const badgeShapes = [
+                  {
+                    /* Badge 0: top-right corner clipped, bracket label prefix */
+                    clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%)",
+                    px: "px-5 py-3",
+                    border: "border-2 border-white/15",
+                    labelPrefix: "[ ",
+                    labelSuffix: " ]",
+                  },
+                  {
+                    /* Badge 1: bottom-left corner clipped, wider */
+                    clipPath: "polygon(0 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 14px))",
+                    px: "px-7 py-4",
+                    border: "border-2 border-white/15",
+                    labelPrefix: "",
+                    labelSuffix: "",
+                  },
+                  {
+                    /* Badge 2: left accent bar instead of full border, no clip */
+                    clipPath: "none",
+                    px: "px-5 py-3",
+                    border: "border-l-4 border-l-white/60 border-t border-t-white/10 border-r border-r-white/10 border-b border-b-white/10",
+                    labelPrefix: "",
+                    labelSuffix: "",
+                  },
+                ];
+                const shape = badgeShapes[i];
+                return (
+                  <motion.div
+                    key={b.label}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.9 + i * 0.12,
+                      type: "spring",
+                      stiffness: 130,
+                      damping: 16,
+                    }}
+                    whileHover={{
+                      scale: 1.1,
+                      color: "#050505",
+                      boxShadow: "6px 6px 0px 0px #FAFAFA",
+                      transition: { duration: 0.15 },
+                    }}
+                    onMouseEnter={playHover}
+                    className={`relative ${shape.px} rounded-none bg-white/[0.02] ${shape.border} cursor-default group overflow-hidden`}
+                    style={{
+                      color: "#FAFAFA",
+                      clipPath: shape.clipPath !== "none" ? shape.clipPath : undefined,
+                    }}
+                  >
+                    {/* Scanline hover fill — diagonal hatch, appears on group-hover */}
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                      style={{
+                        background:
+                          "repeating-linear-gradient(-45deg, #FAFAFA 0px, #FAFAFA 1px, transparent 1px, transparent 6px)",
+                      }}
+                    />
+                    {/* Solid white base fill — also appears on hover under the hatch */}
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none bg-white/80"
+                    />
+                    <span className={`relative z-10 text-xs uppercase tracking-[0.15em] group-hover:text-black transition-colors duration-150 ${blackOpsOne.className}`}>
+                      {shape.labelPrefix}{b.label}{shape.labelSuffix}
+                    </span>
+                    <span className={`relative z-10 text-[10px] text-neutral-400 group-hover:text-neutral-700 ml-2 transition-colors duration-150 ${blackOpsOne.className}`}>
+                      / {b.meta}
+                    </span>
+                  </motion.div>
+                );
+              })}
             </motion.div>
 
             {/* ════════════════════════════════════════════════════
