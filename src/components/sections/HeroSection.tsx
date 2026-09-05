@@ -14,7 +14,9 @@ import { FiDownload } from "react-icons/fi";
 import RotatingText from "@/components/RotatingText";
 import { Vampiro_One, Black_Ops_One } from "next/font/google";
 import gsap from "gsap";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useHUDStore } from "@/store/useHUDStore";
 
 const vampiroOne = Vampiro_One({ weight: "400", subsets: ["latin"], display: "swap" });
 const blackOpsOne = Black_Ops_One({ weight: "400", subsets: ["latin"], display: "swap" });
@@ -183,6 +185,9 @@ Best regards,
   const sectionRef = useRef<HTMLElement>(null);
   const maskLayerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  // Tracks whether the ScrollTrigger has already been wired up, so we never
+  // recreate it if isLoaded flips again (it won't, but guards are cheap).
+  const scrollTriggerSetupRef = useRef(false);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -238,39 +243,61 @@ Best regards,
     return () => window.removeEventListener("mousemove", handler);
   }, [mouseX, mouseY]);
 
-  // Scroll-out: Hero content fades + scales down as section exits viewport.
-  // Desktop only + respects prefers-reduced-motion.
+  // ── Bug-1 fix: run AFTER isLoaded so contentRef is in the DOM ────────────
+  // ── Bug-2 fix: no gsap.registerPlugin here (SmoothScrollProvider owns it) ─
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    if (!isLoaded) return;                    // wait until content renders
+    if (scrollTriggerSetupRef.current) return; // only set up once
 
     const section = sectionRef.current;
     const content = contentRef.current;
-    if (!section || !content) return;
+    if (!section || !content) return;          // ref safety check
 
     const mobile = window.innerWidth <= 768;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (mobile) return; // leave mobile untouched
+    if (mobile) return;
+
+    scrollTriggerSetupRef.current = true;
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: "top top",
         end: "bottom top",
-        scrub: 0.6,      // slight lag for weighted feel
+        scrub: 0.6,
       },
     });
 
     tl.to(content, {
       opacity: 0,
-      // Scale is a depth cue; skip it for reduced-motion users
-      ...(reducedMotion ? {} : { scale: 0.92 }),
+      ...(reducedMotion ? {} : { scale: 0.92, transformOrigin: "center center" }),
       ease: "none",
     });
 
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
+      scrollTriggerSetupRef.current = false;
     };
+  }, [isLoaded]);
+
+  // ── Bug-3 fix: write hero's real scroll fraction to HUD store ─────────────
+  // CameraDrift reads heroCameraWindow from the store in useFrame instead of
+  // using a hardcoded 0.20 that was wrong for this page's total scroll height.
+  useEffect(() => {
+    const calcFraction = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const totalScroll = document.documentElement.scrollHeight;
+      if (totalScroll === 0) return;
+      const fraction = section.offsetHeight / totalScroll;
+      // Floor at 0.02 so a very small fraction doesn't snap the camera too fast
+      useHUDStore.getState().setHeroCameraWindow(Math.max(fraction, 0.02));
+    };
+
+    calcFraction();
+    window.addEventListener("resize", calcFraction);
+    return () => window.removeEventListener("resize", calcFraction);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

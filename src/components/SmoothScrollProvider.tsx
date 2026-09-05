@@ -93,7 +93,8 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     return () => {
       lenis.destroy();
       gsap.ticker.remove(rafHandler);
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      // NOTE: do NOT call ScrollTrigger.getAll().kill() here — each component
+      // is responsible for killing its own triggers in its own cleanup.
       io.disconnect();
     };
   }, [setCurrentLevel]);

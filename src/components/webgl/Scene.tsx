@@ -16,15 +16,13 @@ function CameraDrift({ active }: { active: boolean }) {
   const { camera } = useThree();
   const baseZ = 5;
   const maxDrift = 4; // camera travels from z=5 to z=9 over Hero exit
-  const heroExitWindow = 0.20; // first 20% of total page scroll = Hero zone
 
   useFrame(() => {
     if (!active) return;
-    const prog = useHUDStore.getState().scrollProgress;
-    // Map [0 → heroExitWindow] to [0 → 1], clamp
-    const t = Math.min(prog / heroExitWindow, 1);
+    const { scrollProgress, heroCameraWindow } = useHUDStore.getState();
+    // Map scroll progress through the hero's real proportional window, clamp to [0,1]
+    const t = Math.min(scrollProgress / Math.max(heroCameraWindow, 0.01), 1);
     const targetZ = baseZ + t * maxDrift;
-    // Smooth lerp — feels weighted/damped, not rigid
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.04);
   });
 

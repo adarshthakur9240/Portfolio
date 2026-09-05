@@ -30,19 +30,28 @@ interface HUDState {
    * to avoid per-frame re-renders.
    */
   scrollProgress: number;
+  /**
+   * Hero section height as a fraction of total document scroll height.
+   * Written by HeroSection on mount/resize, read by CameraDrift in useFrame.
+   * Default is 0.15 — overwritten with the real value at runtime.
+   */
+  heroCameraWindow: number;
 
   // Actions
   setCurrentLevel: (level: SectionId) => void;
   toggleMute: () => void;
   setScrollProgress: (p: number) => void;
+  setHeroCameraWindow: (w: number) => void;
 }
 
 export const useHUDStore = create<HUDState>((set) => ({
   currentLevel: "hero",
   isMuted: false,
   scrollProgress: 0,
+  heroCameraWindow: 0.15,
 
   setCurrentLevel: (level) => set({ currentLevel: level }),
   toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
   setScrollProgress: (p) => set({ scrollProgress: p }),
+  setHeroCameraWindow: (w) => set({ heroCameraWindow: w }),
 }));

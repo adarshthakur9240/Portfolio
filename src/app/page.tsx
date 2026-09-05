@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // ── Phase 1 infrastructure ──
@@ -48,12 +47,9 @@ export default function Home() {
   }, [playClick]);
 
   // Warp-speed sound: fires when scroll velocity exceeds threshold.
-  // The Lenis/GSAP setup lives in <SmoothScrollProvider>; we only add
-  // the velocity check here because it needs the sound context.
+  // Registration of ScrollTrigger is handled by SmoothScrollProvider.
   useEffect(() => {
     if (loading) return;
-
-    gsap.registerPlugin(ScrollTrigger);
 
     let throttleWarp = false;
     const scrollTriggerInstance = ScrollTrigger.create({
