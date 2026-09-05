@@ -219,7 +219,7 @@ export function AboutSection() {
                 BIO
               </span>
               <p className="text-lg md:text-xl lg:text-2xl font-medium text-neutral-300 leading-relaxed max-w-2xl">
-                I&apos;m a 4th-year B.Tech IT student at{" "}
+                I&apos;m a Final year B.Tech IT student at{" "}
                 <span className="text-white font-bold">JSS Academy</span> and{" "}
                 <span className="text-white font-bold">
                   GDSC Core Web Lead
