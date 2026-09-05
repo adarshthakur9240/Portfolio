@@ -321,8 +321,14 @@ Best regards,
       {/* ── Content Layer ── */}
       <AnimatePresence>
         {isLoaded && (
-          <motion.div
+          // Plain wrapper — GSAP owns opacity/scale here; no Framer Motion props
+          // so the scrub never conflicts with Framer's entrance animation below.
+          // No overflow:hidden so scale(0.92) isn't clipped.
+          <div
             ref={contentRef}
+            style={{ willChange: "opacity, transform" }}
+          >
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -569,6 +575,7 @@ Best regards,
               </motion.a>
             </motion.div>
           </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </section>
